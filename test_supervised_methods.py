@@ -1,4 +1,9 @@
 #/usr/bin/env/python
+################################################
+#Georgia Institute of Technology
+#Aaron Pfennig
+#2020
+################################################
 from sklearn import linear_model
 from sklearn import svm
 from sklearn import neighbors
@@ -14,6 +19,7 @@ import warnings
 import pandas as pd
 import argparse
 import sys
+from clean_data import CleanData
 
 def read_data(path_to_data):
     #read data
@@ -169,12 +175,15 @@ def evaluate_different_regressors(X, y):
         print(f"{type(reg)}:\t{np.mean(scores)} +\- {np.std(scores)}")
 
 def main(argv):
+    np.random.seed(42)
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', help='csv file with data. First line contains column names and last column class labels')
     args = parser.parse_args()
     data = read_data(args.input)
-    # drop nans
-    data.dropna(inplace=True, axis=0)
+    # clean data
+    if data.isnull().any().any():
+        data = CleanData()(data, 6)
+    #data.dropna(inplace=True)
     # extract data values and labels
     X = data.iloc[:, :-1]
     y = data.iloc[:, -1]

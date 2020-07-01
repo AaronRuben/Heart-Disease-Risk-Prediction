@@ -103,7 +103,7 @@ def main(argv):
     args = parser.parse_args()
     data = read_data(args.input)
     inds_incomplete = data.isnull().any(axis=1)
-    data = CleanData()(data, k=3)
+    data = CleanData()(data, k=6)
     visualizations = Visualizations(data, inds_incomplete)
     visualizations.plot_histograms()
     visualizations.plot_feature_correlations()
