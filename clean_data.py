@@ -9,6 +9,7 @@ import numpy as np
 import argparse
 import sys
 import matplotlib.pyplot as plt
+from sklearn import impute# import KNNImputer
 
 def read_data(path_to_data):
     #read data
@@ -84,7 +85,7 @@ class CleanData:
             completed[i] = point
         return completed
 
-def plot_intra_class_distances(distances, k):
+def plot_intra_class_distances(distances, distances_sklearn, k):
     """
     Plot intra-calls distances
     distances: list, with intra class distances
@@ -92,12 +93,15 @@ def plot_intra_class_distances(distances, k):
     return: plot
     """
     fig, ax = plt.subplots()
-    ax.plot(np.arange(1, k+1, 1), distances, marker='o')
+    ax.plot(np.arange(1, k+1, 1), distances, marker='o', label='Own')
+    ax.plot(np.arange(1, k+1, 1), distances_sklearn, marker='x', label='Sklearn')
     ax.set_xlabel('k')
     ax.set_xticks(np.arange(1, k+1, 1), minor=True)
     ax.tick_params(axis='x', which='minor', labelbottom=True, bottom=True)
     #ax.set_xticklabels(np.arange(1, k+1, 1), minor=True)
     ax.set_ylabel('Overall intra-class distance')
+    ax.legend()
+    plt.show()
     fig.savefig('plots/intra_class_distances.png', bbox_inches='tight')
 
 def compute_intra_class_distances(data, k):
@@ -108,6 +112,7 @@ def compute_intra_class_distances(data, k):
     return: list with intra-class distance for each k
     """
     intra_class_distances = []
+    intra_class_distance_sklearn = []
     for i in range(1, k + 1):
         cleaned_data = CleanData()(data, i)
         no_risk = cleaned_data.loc[cleaned_data.iloc[:, -1] == 0].iloc[:, :-1].values
@@ -115,8 +120,23 @@ def compute_intra_class_distances(data, k):
         intra_class_distance_no_risk = CleanData.pairwise_dist(no_risk, no_risk).sum() / 2
         intra_class_distance_risk = CleanData.pairwise_dist(risk, risk).sum() / 2
         intra_class_distance_overall = intra_class_distance_no_risk + intra_class_distance_risk
+        print(f'Own: {k}: {intra_class_distance_overall}')
         intra_class_distances.append(intra_class_distance_overall)
-    return intra_class_distances
+        cleaned_data = sklearn_knn(data.iloc[:, :-1], data.iloc[:, -1], i)
+        no_risk = cleaned_data[data.iloc[:, -1] == 0]
+        risk = cleaned_data[data.iloc[:, -1] == 1]
+        intra_class_distance_no_risk = CleanData.pairwise_dist(no_risk, no_risk).sum() / 2
+        intra_class_distance_risk = CleanData.pairwise_dist(risk, risk).sum() / 2
+        intra_class_distance_overall = intra_class_distance_no_risk + intra_class_distance_risk
+        print(f'Sklearn: {k}: {intra_class_distance_overall}')
+        intra_class_distance_sklearn.append(intra_class_distance_overall)
+    return intra_class_distances, intra_class_distance_sklearn
+
+def sklearn_knn(X, y, k):
+    knn = impute.KNNImputer(n_neighbors=k)
+    X = knn.fit_transform(X, y)
+    import pdb; pdb.set_trace()
+    return X  
 
 def main(argv):
     parser = argparse.ArgumentParser()
@@ -127,8 +147,8 @@ def main(argv):
     args = parser.parse_args()
     data = read_data(args.input)
     if args.evaluate:
-        intra_class_distances = compute_intra_class_distances(data, args.k)
-        plot_intra_class_distances(intra_class_distances, args.k)
+        intra_class_distances, intra_class_distance_sklearn = compute_intra_class_distances(data, args.k)
+        plot_intra_class_distances(intra_class_distances, intra_class_distance_sklearn,  args.k)
     else:
         cleaned_data = CleanData()(data, args.k)
         cleaned_data.to_csv(args.output, sep=',', header=True, index=False)   
