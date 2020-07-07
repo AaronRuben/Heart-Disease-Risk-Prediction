@@ -53,15 +53,17 @@ def perform_gridsearch(X, y, categorical, threads):
                         accuracy = classification.evaluate_model(reduced_data_test, y_test, model)
                         # keep track of best model
                         if accuracy > best_acc:
+                            best_acc = accuracy
                             params_best_acc = [method, k, d, n]
                             best_model = model
                             best_statistics = statistics
                         if statistics[-1] > best_auc:
+                            best_auc = statistics[-1]
                             params_best_auc = [method, k, d, n]
                         pbar.update(1)
     print(f'Params best ACC:\nMethod: {params_best_acc[0]}\nk: {params_best_acc[1]}\ndegree: {params_best_acc[2]}\nn_components: {params_best_acc[3]}\nACC: {best_acc}')
     print(f'Params best AUC:\nMethod: {params_best_auc[0]}\nk: {params_best_auc[1]}\ndegree: {params_best_auc[2]}\nn_components: {params_best_auc[3]}\nAUC: {best_auc}')
-    return best_model, best_statistics, best_accuracy
+    return best_model, best_statistics, best_acc
 
 class Preprocessing:
     def __init__(self, X, y, k, degree=None, categorical=None):
@@ -312,14 +314,14 @@ def main(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', help='Path to data file in .csv format. Column names should be'\
                         'in line 0 and seperator should be ,. Last column contains labels')
-    parser.add_argument('-k', type=int, help='k-Nearest-Neighbor are used to impute missing values, default=6', 
-                        default=6)
+    parser.add_argument('-k', type=int, help='k-Nearest-Neighbor are used to impute missing values, default=8', 
+                        default=8)
     parser.add_argument('--degree', type=int, help='Generate polynomial features with degree less or equal to specified degree,'\
                         'default=None', default=None)
-    parser.add_argument('--n_components', type=int, help='Number of Components used for PCA, default=4', default=4)
+    parser.add_argument('--n_components', type=int, help='Number of Components used for PCA, default=7', default=7)
     parser.add_argument('--categorical', nargs='+', help='List of categorical features, separated by a space. They will be one-hot-encoded', required=False, default=None)
     parser.add_argument('--n_splits', type=int, help='Number of splits performed during CV, default=10', default=10)
-    parser.add_argument('--method', help='Which supervised learning method to use. One of: SVC, LR (LogisticRegression), RF and NN, default=SVC', default='SVC')
+    parser.add_argument('--method', help='Which supervised learning method to use. One of: SVC, LR (LogisticRegression), RF and NN, default=RF', default='RF')
     parser.add_argument('--verbose', help='Verbosity', default=False, action='store_true')
     parser.add_argument('--optimize', help='Perform GridSearch and print optimal settings', default=False, action='store_true')
     parser.add_argument('--output_dir', help='Directory where to save model etc.', default='./output/')
