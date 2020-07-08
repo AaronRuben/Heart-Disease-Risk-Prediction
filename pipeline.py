@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-<<<<<<< HEAD
-=======
 import pandas as pd
 import sys
 import argparse
@@ -20,13 +18,16 @@ import joblib
 import os
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.optimizers import SGD
 
 def perform_gridsearch(X, y, categorical, threads):
-    kneighbors = np.arange(4, 11, 2)
-    degrees = np.arange(1, 6, 2)
-    n_components = np.arange(4, 16, 3)
-    n_splits = 5
-    methods = ['RF', 'LR', 'SVC']
+    kneighbors = np.arange(2, 6, 1)
+    degrees = np.arange(2, 5, 1)
+    n_components = np.arange(1, 7, 1)
+    n_splits = 10
+    methods = ['RF', 'LR', 'SVC', 'NN']
     #categorical = 'education male currentSmoker prevalentStroke prevalentHyp diabetes'.split(' ')
     best_auc = 0.0
     best_acc = 0.0
@@ -39,13 +40,13 @@ def perform_gridsearch(X, y, categorical, threads):
                 for k in kneighbors:
                     for n in n_components:
                         # prepare training data
-                        preprocessing_train = Preprocessing(X_train, y_train, k, d, categorical)
+                        preprocessing_train = Preprocessing(X_train, y_train, k, d, categorical, method)
                         preprocessed_data_train = preprocessing_train()
                         dim_reduction_train = DimensionalityReduction(preprocessed_data_train, n)
                         reduced_data_train = dim_reduction_train()
     
                         #prepare test data
-                        preprocessing_test = Preprocessing(X_test, y_test, k, d, categorical)
+                        preprocessing_test = Preprocessing(X_test, y_test, k, d, categorical, method)
                         preprocessed_data_test = preprocessing_test()
                         dim_reduction_test = DimensionalityReduction(preprocessed_data_test, n)
                         reduced_data_test = dim_reduction_test()
@@ -59,16 +60,13 @@ def perform_gridsearch(X, y, categorical, threads):
                             params_best_acc = [method, k, d, n]
                             best_model = model
                             best_statistics = statistics
-                        if statistics[-1] > best_auc:
-                            best_auc = statistics[-1]
-                            params_best_auc = [method, k, d, n]
                         pbar.update(1)
     print(f'Params best ACC:\nMethod: {params_best_acc[0]}\nk: {params_best_acc[1]}\ndegree: {params_best_acc[2]}\nn_components: {params_best_acc[3]}\nACC: {best_acc}')
     print(f'Params best AUC:\nMethod: {params_best_auc[0]}\nk: {params_best_auc[1]}\ndegree: {params_best_auc[2]}\nn_components: {params_best_auc[3]}\nAUC: {best_auc}')
     return best_model, best_statistics, best_acc
 
 class Preprocessing:
-    def __init__(self, X, y, k, degree=None, categorical=None):
+    def __init__(self, X, y, k, degree=None, categorical=None, method=None):
         """
         Init class
         data: pandas DataFrame, last column represents class labels
@@ -83,6 +81,7 @@ class Preprocessing:
         self.y = y
         self.k = k
         self.degree = degree
+        self.method = method
         
     def clean_data(self):
         """
@@ -143,8 +142,8 @@ class Preprocessing:
         # impute missing values
         cleaned_data = self.clean_data()
         cleaned_data = pd.DataFrame(cleaned_data, columns=self.X.columns)
-        # one hot encode categorical features
-        if not self.categorical is None:
+        # one hot encode categorical features, dissabled for random forest
+        if not self.categorical is None and self.method != 'RF':
             cleaned_data = self.check_one_hot_encoding(cleaned_data)
         # standardize data
         preprocessed = self.standardize_data(cleaned_data)
@@ -210,8 +209,33 @@ class Classification:
                                      random_state=42, n_jobs=self.threads)
         return rfc
 
+    def define_nn_model(self):
+        """
+        By Dimitry Shribak
+        Define keras model
+        return: keras model
+        """
+        model = Sequential()
+        model.add(Dense(25, input_dim=self.X.shape[1], activation='relu'))
+        model.add(Dense(15, activation='relu'))
+        model.add(Dense(1, activation='sigmoid'))
+        return model
+    
     def neural_net(self):
-        raise NotImplementedError
+        """
+        By Dimitry Shribak
+        Train simple NN
+        return: compiled keras model
+        """
+        # suppress tensorflow output
+        import logging
+        logging.getLogger('tensorflow').disabled = True
+        # initialize model
+        model = self.define_nn_model()
+        # compile model
+        opt = SGD(lr=0.0001)
+        model.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
+        return model
 
     def perform_cv(self, model):
         """
@@ -225,11 +249,17 @@ class Classification:
         mean_fpr = np.linspace(0, 1, 100)
         for train, test in skf.split(self.X, self.y):
             # train model
-            model.fit(self.X.values[train, :], self.y.values[train])
-            # predict
-            probas_ = model.predict_proba(self.X.values[test, :])
+            if self.method != 'NN':
+                model.fit(self.X.values[train, :], self.y.values[train])
+                # predict
+                probas_ = model.predict_proba(self.X.values[test, :])[:, 1]
+            else:
+                # train NN
+                model.fit(self.X.values[train, :], self.y.values[train], validation_split=0.33,
+                          epochs=10, batch_size=10, verbose=0)
+                probas_ = model.predict(self.X.values[test, :]).ravel()
             # Compute ROC curve
-            fpr, tpr, thresholds = roc_curve(self.y.values[test], probas_[:, 1])
+            fpr, tpr, thresholds = roc_curve(self.y.values[test], probas_)
             mean_tpr += interp(mean_fpr, fpr, tpr)
             mean_tpr[0] = 0.0
             roc_auc = auc(fpr, tpr)
@@ -245,7 +275,14 @@ class Classification:
         Train model on entire training set
         return: trained model
         """
-        model.fit(self.X.values, self.y.values)
+        # train regular model
+        if self.method != 'NN':
+            model.fit(self.X.values, self.y.values)
+        # train neural net
+        else:
+            # taken from Dimitry Shribak
+            model.fit(self.X.values, self.y.values, validation_split=0.33, epochs=100,
+                      batch_size=10, verbose=2)
         return model
 
     def predict(self, X, model):
@@ -255,7 +292,10 @@ class Classification:
         model: trained model
         return: predicted class labels
         """
-        return model.predict(X)
+        if self.method != 'NN':
+            return model.predict(X)
+        else:
+            return model.predict_classes(X)
 
     def evaluate_model(self, X, y, model):
         """
@@ -280,6 +320,7 @@ class Classification:
         else:
             raise ValueError("Select one of SVC, LR, RF and NN")
         # cross validate model
+        #if self.method != 'NN':
         statistics = self.perform_cv(model)
         # train model on entire training set
         model = self.train_model(model)
@@ -316,11 +357,11 @@ def main(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', help='Path to data file in .csv format. Column names should be'\
                         'in line 0 and seperator should be ,. Last column contains labels')
-    parser.add_argument('-k', type=int, help='k-Nearest-Neighbor are used to impute missing values, default=8', 
-                        default=8)
+    parser.add_argument('-k', type=int, help='k-Nearest-Neighbor are used to impute missing values, default=2', 
+                        default=2)
     parser.add_argument('--degree', type=int, help='Generate polynomial features with degree less or equal to specified degree,'\
-                        'default=None', default=None)
-    parser.add_argument('--n_components', type=int, help='Number of Components used for PCA, default=7', default=7)
+                        'default=3', default=3)
+    parser.add_argument('--n_components', type=int, help='Number of Components used for PCA, default=4', default=4)
     parser.add_argument('--categorical', nargs='+', help='List of categorical features, separated by a space. They will be one-hot-encoded', required=False, default=None)
     parser.add_argument('--n_splits', type=int, help='Number of splits performed during CV, default=10', default=10)
     parser.add_argument('--method', help='Which supervised learning method to use. One of: SVC, LR (LogisticRegression), RF and NN, default=RF', default='RF')
@@ -345,13 +386,13 @@ def main(argv):
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
    
         # prepare training data
-        preprocessing_train = Preprocessing(X_train, y_train, args.k, args.degree, args.categorical)
+        preprocessing_train = Preprocessing(X_train, y_train, args.k, args.degree, args.categorical, args.method)
         preprocessed_data_train = preprocessing_train()
         dim_reduction_train = DimensionalityReduction(preprocessed_data_train, args.n_components)
         reduced_data_train = dim_reduction_train()
     
         #prepare test data
-        preprocessing_test = Preprocessing(X_test, y_test, args.k, args.degree, args.categorical)
+        preprocessing_test = Preprocessing(X_test, y_test, args.k, args.degree, args.categorical, args.method)
         preprocessed_data_test = preprocessing_test()
         dim_reduction_test = DimensionalityReduction(preprocessed_data_test, args.n_components)
         reduced_data_test = dim_reduction_test()
@@ -365,8 +406,10 @@ def main(argv):
     visualize = Visualization(args.output_dir)
     visualize.plot_roc_curve(*statistics)
     # save model
-    joblib.dump(model, f'{args.output_dir}trained_model.sav')
+    if classification.method == 'NN':
+        model.save(f'{args.output_dir}trained_model.h5')
+    else:
+        joblib.dump(model, f'{args.output_dir}trained_model.sav')
 
 if __name__ == '__main__':
     main(sys.argv[1:])
->>>>>>> d91af72... Fixed bug in grid search and updated default parameters
