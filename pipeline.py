@@ -29,7 +29,6 @@ def perform_gridsearch(X, y, categorical, threads):
     n_splits = 10
     methods = ['RF', 'LR', 'SVC', 'NN']
     #categorical = 'education male currentSmoker prevalentStroke prevalentHyp diabetes'.split(' ')
-    best_auc = 0.0
     best_acc = 0.0
     # Split data in train and test set   
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -62,7 +61,6 @@ def perform_gridsearch(X, y, categorical, threads):
                             best_statistics = statistics
                         pbar.update(1)
     print(f'Params best ACC:\nMethod: {params_best_acc[0]}\nk: {params_best_acc[1]}\ndegree: {params_best_acc[2]}\nn_components: {params_best_acc[3]}\nACC: {best_acc}')
-    print(f'Params best AUC:\nMethod: {params_best_auc[0]}\nk: {params_best_auc[1]}\ndegree: {params_best_auc[2]}\nn_components: {params_best_auc[3]}\nAUC: {best_auc}')
     return best_model, best_statistics, best_acc
 
 class Preprocessing:
@@ -120,7 +118,11 @@ class Preprocessing:
                 continue
             # if not one hot encode
             else:
-                df = pd.get_dummies(df, columns=[cat])
+                if self.method != 'NN':
+                    df = pd.get_dummies(df, columns=[cat])
+                # drop first column in case of NN --> may lead to disturbances otherwise
+                else:
+                    df = pd.get_dummies(df, columns=[cat], drop_first=True)
         return df
 
     def standardize_data(self, df):
@@ -281,7 +283,7 @@ class Classification:
         # train neural net
         else:
             # taken from Dimitry Shribak
-            model.fit(self.X.values, self.y.values, validation_split=0.33, epochs=100,
+            model.fit(self.X.values, self.y.values, validation_split=0.33, epochs=40,
                       batch_size=10, verbose=2)
         return model
 
