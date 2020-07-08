@@ -90,9 +90,10 @@ class Preprocessing:
         cleaned_data = knn.fit_transform(self.X)
         cleaned_data = pd.DataFrame(cleaned_data, columns=self.X.columns)
         # round numbers thus we can get the correct dummies
-        categorical_data = cleaned_data[self.categorical].astype(int)
-        cleaned_data.drop(self.categorical, inplace=True, axis=1)
-        cleaned_data = pd.concat([cleaned_data, categorical_data], axis=1)
+        if not self.categorical is None:
+            categorical_data = cleaned_data[self.categorical].astype(int)
+            cleaned_data.drop(self.categorical, inplace=True, axis=1)
+            cleaned_data = pd.concat([cleaned_data, categorical_data], axis=1)
         return cleaned_data
     
     def feature_engineering(self, data):
@@ -364,7 +365,8 @@ def main(argv):
     parser.add_argument('--degree', type=int, help='Generate polynomial features with degree less or equal to specified degree,'\
                         'default=3', default=3)
     parser.add_argument('--n_components', type=int, help='Number of Components used for PCA, default=4', default=4)
-    parser.add_argument('--categorical', nargs='+', help='List of categorical features, separated by a space. They will be one-hot-encoded', required=False, default=None)
+    parser.add_argument('--categorical', nargs='+', help='List of categorical features, separated by a space. They will be one-hot-encoded',
+                        required=False, default=['education', 'male', 'currentSmoker', 'prevalentStroke', 'prevalentHyp', 'diabetes'])
     parser.add_argument('--n_splits', type=int, help='Number of splits performed during CV, default=10', default=10)
     parser.add_argument('--method', help='Which supervised learning method to use. One of: SVC, LR (LogisticRegression), RF and NN, default=RF', default='RF')
     parser.add_argument('--verbose', help='Verbosity', default=False, action='store_true')
