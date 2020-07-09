@@ -23,16 +23,16 @@ from keras.layers import Dense
 from keras.optimizers import SGD
 
 def perform_gridsearch(X, y, categorical, threads):
-    kneighbors = np.arange(2, 6, 1)
-    degrees = np.arange(2, 5, 1)
-    n_components = np.arange(1, 7, 1)
+    kneighbors = [6]#np.arange(2, 6, 1)
+    degrees = [3]#np.arange(2, 5, 1)
+    n_components = [10, 100, 400, 600, 800]#np.arange(1, 7, 1)
     n_splits = 10
-    methods = ['RF', 'LR', 'SVC', 'NN']
+    methods = ['RF', 'LR', 'SVC']#, 'NN']
     #categorical = 'education male currentSmoker prevalentStroke prevalentHyp diabetes'.split(' ')
     best_acc = 0.0
     # Split data in train and test set   
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    nr_combinations = kneighbors.shape[0] * degrees.shape[0] * n_components.shape[0] * len(methods)
+    nr_combinations = len(kneighbors) * len(degrees) * len(n_components) * len(methods)
     with tqdm(total=nr_combinations) as pbar:
         for method in methods:
             for d in degrees:
@@ -42,13 +42,13 @@ def perform_gridsearch(X, y, categorical, threads):
                         preprocessing_train = Preprocessing(X_train, y_train, k, d, categorical, method)
                         preprocessed_data_train = preprocessing_train()
                         dim_reduction_train = DimensionalityReduction(preprocessed_data_train, n)
-                        reduced_data_train = dim_reduction_train()
+                        reduced_data_train, components_train, variance_ratio = dim_reduction_train()
     
                         #prepare test data
                         preprocessing_test = Preprocessing(X_test, y_test, k, d, categorical, method)
                         preprocessed_data_test = preprocessing_test()
                         dim_reduction_test = DimensionalityReduction(preprocessed_data_test, n)
-                        reduced_data_test = dim_reduction_test()
+                        reduced_data_test, _, _ = dim_reduction_test()
                         
                         classification = Classification(reduced_data_train, y_train, method, n_splits, threads)
                         model, statistics = classification()
@@ -174,10 +174,11 @@ class DimensionalityReduction:
         reduced = pca.fit_transform(self.data.values)
         columns = [f'PC{i}' for i in range(1, self.n_components + 1)]
         reduced = pd.DataFrame(reduced, columns=columns)
-        return reduced
+        return reduced, pca.components_, pca.explained_variance_ratio_
 
     def __call__(self):
-        return self.pca()
+        reduced, components, variance_ratio = self.pca()
+        return reduced, components, variance_ratio
 
 class Classification:
     def __init__(self, X, y, method, n_splits, threads):
@@ -200,7 +201,7 @@ class Classification:
         """
         Initialize logistic regressor
         """
-        lg = LogisticRegression(class_weight='balanced', max_iter=1000,
+        lg = LogisticRegression(class_weight='balanced', max_iter=10000,
                                 random_state=42, n_jobs=self.threads)
         return lg
 
@@ -309,6 +310,34 @@ class Classification:
         if verbose:
             print(f'ACC: {acc}')
         return acc
+
+    def get_best_features(self, model, components, variance_ratio, feature_labels):
+        """
+        Get the best features of the random Forest
+        model: train RF model
+        components:n_components x n_features, principal axes in feature space
+        variance_ratio: n_components, explained variance ratios
+        feature_labels, n_features, actual feature labels
+        return: list, best features
+        """
+        # normalize components n_componets x n_features --> n_feature x n_components
+        components = np.absolute(components).T / np.absolute(components).sum(axis=1)        
+        # multiply the contribution of each feature to each component by weight of the components
+        #  n_feature x n_components --> n_componets x n_feature
+        contribution = (components * variance_ratio).T
+        # pick most important components
+        best_component_inds = np.argsort(model.feature_importances_)[-10:]
+        best_components = contribution[best_component_inds, :]
+        # sum over all components
+        feature_contribution = best_components.sum(axis=0)
+        # pick features with greates contribution = best features
+        best_feature_inds = np.argsort(feature_contribution)[-10:][::-1]
+        best_features = feature_labels[best_feature_inds]
+        if verbose:
+            print('The top 10 features are:')
+            for i, feature in enumerate(best_features):
+                print(f'{i + 1}. {feature}')
+        return best_features
     
     def __call__(self):
         # initialize model
@@ -332,7 +361,26 @@ class Classification:
 class Visualization:
     def __init__(self, plot_dir):
         self.plot_dir = plot_dir
-
+        
+    def plot_components(self, X_new, y, variance_ratio):
+        """
+        Plot the first two 2 components
+        X_new: Nxn_components PCA transformed data
+        return None
+        """
+        fig, ax = plt.subplots()
+        # plot no risk
+        ax.scatter(X_new.values[y == 0, 0], X_new.values[y == 0, 1], marker='o', alpha=0.6, c='green', label='No risk')
+        # plot risk
+        ax.scatter(X_new.values[y == 1, 0], X_new.values[y == 1, 1], marker='x', alpha=0.6, c='red', label='Risk')
+        ax.set_xlabel('PC1 {:.1f}%'.format(variance_ratio[0] * 100))
+        ax.set_ylabel('PC2 {:.1f}%'.format(variance_ratio[1] * 100))
+        ax.set_yscale('symlog')
+        ax.set_xscale('symlog')
+        ax.legend(bbox_to_anchor=(0.5, -0.13), loc='upper center', ncol=2)
+        figname = self.plot_dir + 'pca_transformed.png'
+        fig.savefig(figname, bbox_inches='tight')
+        
     def plot_roc_curve(self, fpr, tpr, auc):
         """
         Plot ROC curve based on CV results
@@ -380,7 +428,7 @@ def main(argv):
     data_df = pd.read_csv(args.data, sep=',', header=0)
     X = data_df.iloc[:, :-1]
     y = data_df.iloc[:, -1]
-    
+    visualize = Visualization(args.output_dir)
     # do grid search
     if args.optimize:
         model, statistics, accuracy = perform_gridsearch(X, y, args.categorical, args.threads)
@@ -393,24 +441,29 @@ def main(argv):
         preprocessing_train = Preprocessing(X_train, y_train, args.k, args.degree, args.categorical, args.method)
         preprocessed_data_train = preprocessing_train()
         dim_reduction_train = DimensionalityReduction(preprocessed_data_train, args.n_components)
-        reduced_data_train = dim_reduction_train()
+        reduced_data_train, components_train, variance_ratio = dim_reduction_train()
+        visualize.plot_components(reduced_data_train, y_train, variance_ratio)
     
         #prepare test data
         preprocessing_test = Preprocessing(X_test, y_test, args.k, args.degree, args.categorical, args.method)
         preprocessed_data_test = preprocessing_test()
-        dim_reduction_test = DimensionalityReduction(preprocessed_data_test, args.n_components)
-        reduced_data_test = dim_reduction_test()
+        dim_reduction_test= DimensionalityReduction(preprocessed_data_test, args.n_components)
+        reduced_data_test, _, _ = dim_reduction_test()
 
         classification = Classification(reduced_data_train, y_train, args.method, args.n_splits, args.threads)
         model, statistics = classification()
+        # if RF get best features --> need model, the fraction with which each feature contributed to component, original feature names
+        if args.method == 'RF':
+            best_features = classification.get_best_features(model, components_train, variance_ratio,
+                                                             preprocessed_data_train.columns)
+        
         accuracy = classification.evaluate_model(reduced_data_test, y_test, model)
     if not os.path.isdir(args.output_dir):
         os.makedirs(args.output_dir)
     # plot roc
-    visualize = Visualization(args.output_dir)
     visualize.plot_roc_curve(*statistics)
     # save model
-    if classification.method == 'NN':
+    if args.method == 'NN':
         model.save(f'{args.output_dir}trained_model.h5')
     else:
         joblib.dump(model, f'{args.output_dir}trained_model.sav')
