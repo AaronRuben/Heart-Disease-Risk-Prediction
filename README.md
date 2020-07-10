@@ -1,6 +1,6 @@
 ## Welcome to the CS 7641 Project
 
-hi
+hi FFFFF
 
 You can use the [editor on GitHub](https://github.com/AaronRuben/heartdisease_CS7641/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
 
