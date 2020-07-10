@@ -25,6 +25,39 @@ When the analysis is done without a PCA the AUC remains at *0.71*, the accuracy 
 ![Confusion matrix SVC without PCA](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/master/output/confusion_matrix_svc_without_pca.png)
 
 
+### Dependencies
 
+ - scikit-learn v0.23.1
+ - pandas
+ - numpy
+ - joblib
+ - matplotlib 
+ - keras
+ - tqdm
 
+### How to run the pipeline
+    ./pipeline.py
+    Required parameters 
+	    --data <path_to_data_file> csv file, column names in first line, last column contains class labels
+	    --output_dir <path_to_output_directory>
+    
+    Optional parameters
+	    -k <int> number of k-NearestNeighbor to consider while imputing values, default=5
+	    --degree <int> max degree for creating polynomial features, default=3
+	    --n_components <int> number of components to keep during PCA, default=300
+	    --method [RF, LR, SVC, NN] supervised learning method to employ, default='SVC'
+	    --categorical column names of categorical features, separated by a space, default=['education', 'male', 'currentSmoker', 'prevalentStroke', 'prevalentHyp', 'diabetes']
+	    --threads <int> number of threads to use where parallelization is possible, default=8
+	    --optimize run Grid search to find best parameters. Modify parameter space at top of script in perform_gridsearch()
+	    --verbose verbosity
+    
+    Expected Output in --output_dir:
+    - model.sav or model.h5 trained model
+    - roc_curve.png Plot of ROC curve of evaluation during cross validation on training set
+    - confusion_matrix.png Confusion matrix of prediction on test set
+    - correlation_matrix.png Correlation matrix of raw feature after missing value imputation
+    - pca_transformed.png Plot of datapoints in first 3 components
+    - pca_recovered_variance.png Cumulative plot variance recovered with kept components
+    - if --method RF
+	    - RF_best_features.tab 10 best features of RF
 
