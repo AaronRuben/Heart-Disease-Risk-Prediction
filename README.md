@@ -1,39 +1,28 @@
 ## Welcome to the CS 7641 Project
 
-hi FFFFF
+### Introduction
 
-You can use the [editor on GitHub](https://github.com/AaronRuben/heartdisease_CS7641/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+### Finding the best estimator
+We evaluate the performance of logistic regression (LR), support vector machine (SVC), random forest (RF) and a simple neural network (NN) with respect to prediction of risk of developing a heart disease within ten years. 
+The performances have been assed in terms of accuracy (ACC) and area under (AUC) the receiver operating characteristic (ROC) curve. These to metrics did not positively correlate with each other since the present dataset is highly skewed. The number of patients without risk of developing a heart disease is dramatically outweighing those who are in risk. Hence, the classifier would perform very well when always predicting *No risk* when using accuracy as a measure. However, this would cause a drop in true positive rate or sensitivity and thereby lead to a low AUC. Thus, the same classifier would perform badly in terms AUC.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+In order to decide which of the above mentioned classifier works the best on our dataset, we performed a grid search over the following parameter space:
+ - k the number of nearest neighbors within a class to consider when imputing the missing values
+- d: the degree used for creating polynomial features
+- n : the number of components to keep during the PCA
+- method: the estimator (one of LR, SVC, RF, NN)
 
-### Markdown
+When assessing the performs with respect to the accuracy a random forest classifier outperforms the other classifier with an accuracy of $0.86$ but the AUC is only $0.62$. $k$ has been found to be 2, $d$ to be 3 and $n$ to be 4. However, as shown below the scenario of high accuracy and low AUC described above occurs with these settings. The model just always predicts *No risk* which is pretty good guess just by chance but it misses nearly all patients who are at risk. In a medical setting this is particularly bad thus, AUC is the more appropriate metric to assess the classifiers performance.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+![Confusion matrix random forest](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/master/output/confusion_matrix_rf.png)
+![ROC curve RF](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/master/output/roc_curve_svc.png)
 
-```markdown
-Syntax highlighted code block
+When doing the grid-search with respect to the AUC, the SVC turns out to outperform all other classifiers. With $k=5$, $d=3$ and $n=300$ it achieves an AUC of $0.71$ and accuracy of $0.80$. But as can be seen below the number of correctly predicted patients is higher albeit not greater either. 
 
-# Header 1
-## Header 2
-### Header 3
+![Confusion matrix SVC](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/master/output/confusion_matrix_svc.png)
+![ROC curve SVC](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/master/output/roc_curve_svc.png)
+When the analysis is done without a PCA the AUC remains at $0.71$, the accuracy drops to $0.75$ but the number true positive (TP) predictions increases as well as the number in false positive (FP) predictions.
 
-- Bulleted
-- List
+![Confusion matrix SVC without PCA](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/master/output/confusion_matrix_svc_without_pca.png)
 
-1. Numbered
-2. List
 
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/AaronRuben/heartdisease_CS7641/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
