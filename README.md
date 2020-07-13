@@ -3,7 +3,7 @@
 ### Introduction
 
 ### Background 
-Cardiovascular diseases (CVD) are the number 1 cause of deaths worldwide with over 17 million deaths per year [1]. Since 1947, the Framingham Heart Study (FHS) has been a central pioneer of the expansion from treatment-based to preventive medicine by establishing risk factor determination as a central pillar of data analysis of studying disease. [2]. With more data available than ever before, machine learning has been shown to improve risk score predictions for CVD and beyond [3]. 
+Cardiovascular diseases (CVD) are the number one cause of deaths worldwide with over 17 million deaths per year [1]. Since 1947, the Framingham Heart Study (FHS) has been a central pioneer of the expansion from treatment-based to preventive medicine by establishing risk factor determination as a central pillar of data analysis of studying disease. [2]. With more data available than ever before, machine learning has been shown to improve risk score predictions for CVD and beyond [3]. 
 The dataset consists of continuous (ie Age, Cigarettes per day, etc) and binary (Is this person a current smoker) variables. In total there are 15 features included by over 4000 records. The aim is to predict if someone is in risk of developing a CVD within the next ten years and to pinpoint potential risk factors. The dataset is publicly available on [kaggle](https://www.kaggle.com/dileep070/heart-disease-prediction-using-logistic-regression).
 
 ### Data Cleaning
@@ -11,7 +11,7 @@ One of the most challenging tasks in data analysis is data cleaning on which sci
 The data used in the current project has 4240 labeled datapoints with 15 features of which 6 features have some missing values. Similar to all experimental set of data, the data used in this project has some missing values for some features. There are many logics according to which data cleaning can be executed. In the simplest way, one could simply remove the datapoints with any number of missing values. In this case, by doing so we could lose significant portion of the data which could diminish the reliability of the model. In a more efficient way, one could find the average of values of a feature and imput that for all missing values for the corresponding feature. Or if the labels are given, like in this project, missing features for each datapoint can be calculated by finding the average of the features for that associated label. In this project, the dataset contains two labels which corresponds to whether the person develops heart disease or not. So, we bascialy had two different ways to go. First way was to imput the missing values by using clustering method of the unsupervised data. In this method, the dataset is divided into different clusters according to the features that do not have any missing value. Then, the missing values of each datapoint is found by averaging the values of the corresponsing feature of that cluster. In this method, the best number of clusters is determined by using the Elbow method. The other method was to find the missing values based on the labels. To do so, the *k*-nearest-neighbors within the class were identified and their average value for each missing feature is calculated. The optimal number for *k* has been determined using the elbow method. The plot below shows that *k=6* is a suitable choice as well as that the KNNImputer implented in scikit-learn and our own implementation yield similar results. In this project, although the differences between the calculated values are not very huge, imputing based on the labels was used.
 
 ![Elbow method kNN](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/AP/plots/intra_class_distances.png)
-![Elbow method kmeans](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/tree/FS/kmeans.png)
+![Elbow method kmeans](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/FS/kmeans.png)
 
 ### Finding the best estimator
 We evaluate the performance of logistic regression (LR), support vector machine (SVC), random forest (RF) and a simple neural network (NN) with respect to prediction of risk of developing a heart disease within ten years. 
@@ -34,6 +34,13 @@ When doing the grid-search with respect to the AUC, the SVC turns out to outperf
 When the analysis is done without a PCA the AUC remains at *0.71*, the accuracy drops to *0.75* but the number true positive (TP) predictions increases as well as the number in false positive (FP) predictions.
 
 ![Confusion matrix SVC without PCA](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/master/output/confusion_matrix_svc_without_pca.png)
+
+### References:
+
+[1] WHO fact sheet Cardiovascular diseases (CVDs), https://www.who.int/en/news-room/fact-sheets/detail/cardiovascular-diseases-(cvds)   
+[2] Mahmood, S. S., Levy, D., Vasan, R. S., & Wang, T. J. (2014). The Framingham Heart Study and the epidemiology of cardiovascular disease: A historical perspective. In The Lancet (Vol. 383, Issue 9921, pp. 999–1008). Lancet Publishing Group. https://doi.org/10.1016/S0140-6736(13)61752-3.   
+[3] Weng SF, Reps J, Kai J, Garibaldi JM, Qureshi N (2017) Can machine-learning improve cardiovascular risk prediction using routine clinical data?. PLOS ONE 12(4): e0174944. https://doi.org/10.1371/journal.pone.0174944.   
+[4] Faris, H., Aljarah, I. & Mirjalili, S. Training feedforward neural networks using multi-verse optimizer for binary classification problems. Appl Intell 45, 322–332 (2016). https://doi.org/10.1007/s10489-016-0767-1.   
 
 
 ### Dependencies
