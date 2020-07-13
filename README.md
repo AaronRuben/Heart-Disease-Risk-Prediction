@@ -6,22 +6,25 @@
 Cardiovascular diseases (CVD) are the number one cause of deaths worldwide, with over 17 million deaths per year [1]. Since 1947, the Framingham Heart Study (FHS) has been a central pioneer of the expansion from treatment-based to preventive medicine by establishing risk factor determination as a central pillar of data analysis of studying the disease. [2]. With more data available than ever before, machine learning has been shown to improve risk score predictions for CVD and beyond [3]. 
 The dataset consists of continuous (i.e., Age, Cigarettes per day, etc.) and binary (Is this person a current smoker) variables. In total, there are 15 features included by over 4000 records. The aim is to predict if someone is at risk of developing a CVD within the next ten years and to pinpoint potential risk factors. The dataset is publicly available on [kaggle](https://www.kaggle.com/dileep070/heart-disease-prediction-using-logistic-regression).
 
-###Unsupervised Learning Section
+### Unsupervised Learning Section
 
-### Data Cleaning
+## Data Cleaning
 One of the most challenging tasks in data analysis is data cleaning, on which scientists spend an enormous amount of time enhancing the reliability and quality of the data. In working with any real dataset, usually, there are some data points in which some features are missing. This is usually due to not maintaining the data correctly or because this data has not been recorded initially. These missing values incur errors and unreliability in the analysis and eventually leads to not having a robust predictive model. To overcome this problem, we need to find and imput values for the missing ones by using the standard probabilistic models or even refine the data to remove the errors. This helps us to obtain a reliable dataset that improves the quality of the training data for analysis and provides accurate decision-making.
 The data used in the current project has 4240 labeled data points with 15 features, of which 6 features have some missing values. Similar to all experimental set of data, the data used in this project has some missing values for some features. There are many logics, according to which data cleaning can be executed. Most commonly, one could remove the datapoints with any number of missing values. In this case we could lose a significant portion of the data, which could diminish the reliability of the model. More efficiently, one could find the average of values of a feature and imput that for all missing values for the corresponding feature. Or, if the labels are given, like in this project, missing features for each data point can be calculated by finding the average of the features for that associated label. In this project, the dataset contains two labels that correspond to whether the person develops heart disease or not. So, we basically had two different ways to go. The first way was to imput the missing values by using the clustering method of the unsupervised data. In this method, the dataset is divided into different clusters according to the features that do not have any missing value. Then, the missing values of each data point are found by averaging the values of the corresponding feature of that cluster. In this method, the best number of clusters is determined by using the Elbow method which is shown in below. The other method was to find the missing values based on the labels. To do so, the *k*-nearest-neighbors within the class were identified, and their average value for each missing feature is calculated. The optimal number for *k* has been determined using the elbow method. The plot below shows that *k=6* is a suitable choice as well as that the KNNImputer implemented in scikit-learn and our own implementation yield similar results. In this project, although the differences between the calculated values are not very vast, imputing based on the labels was used.
 
 ![Elbow method kmeans](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/FS/k.png)   
 ![Elbow method kNN](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/AP/plots/intra_class_distances.png)   
 
-### Supervised Learning
+### Supervised Learning Section
+
+## Neural Network
 
 
 
 
 
-### Finding the best estimator
+
+## Finding the best estimator
 We evaluate the performance of logistic regression (LR), support vector machine (SVC), random forest (RF) and a neural network (NN) with respect to prediction of risk of developing a heart disease within ten years. 
 The performances have been assed in terms of accuracy (ACC) and area under (AUC) the receiver operating characteristic (ROC) curve. These to metrics did not positively correlate with each other since the present dataset is highly skewed. The number of patients without risk of developing a heart disease is dramatically outweighing those who are in risk. Hence, the classifier would perform very well when always predicting *No risk* when using accuracy as a measure. However, this would cause a drop in true positive rate or sensitivity and thereby lead to a low AUC. Thus, the same classifier would perform badly in terms AUC.
 
