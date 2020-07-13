@@ -17,12 +17,13 @@ The data used in the current project has 4240 labeled data points with 15 featur
 ## Supervised Learning Section
 ### Neural Network
 
+In order to classify the 10 year risk of coronary heart disease CHD, a two layer Neural Network algorithim was devised, as shown below:
+
+![Neural Network Algorithim](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/DS/nn.png)   
 
 
 
-
-
-## Finding the best estimator
+### Finding the best estimator
 We evaluate the performance of logistic regression (LR), support vector machine (SVC), random forest (RF) and a neural network (NN) with respect to prediction of risk of developing a heart disease within ten years. 
 The performances have been assed in terms of accuracy (ACC) and area under (AUC) the receiver operating characteristic (ROC) curve. These to metrics did not positively correlate with each other since the present dataset is highly skewed. The number of patients without risk of developing a heart disease is dramatically outweighing those who are in risk. Hence, the classifier would perform very well when always predicting *No risk* when using accuracy as a measure. However, this would cause a drop in true positive rate or sensitivity and thereby lead to a low AUC. Thus, the same classifier would perform badly in terms AUC.
 
