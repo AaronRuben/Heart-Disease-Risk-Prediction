@@ -27,7 +27,9 @@ In order to classify the 10 year risk of coronary heart disease CHD, a feed forw
 
 The activation function of choice for the hidden layers was the Relu function due to other classical functions like Sigmoid and Tanh tend to saturate the information, since they are mostly sensitive to changes around their midpoints (7). For the backpropogation step, the stochastic gradient descent alogrithim was used with a learning rate of 0.0001. This learning rate was chosen by running the model with multiple rates and seeing which one provided fast convergence over the 150 epochs used to train. The dataset was split into 66% training and 33% test. In order to quantify perfomance, a binary cross entropy loss function was for training and testing. The following plots show the training loss vs epochs as well as accuracy vs epochs. 
 
+![Model loss train and test vs epochs](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/DS/nnloss.png)
 
+The final accuracy of the model was 0.85 on the test set, making it the second best performing classifier. 
 
 
 ### Finding the best estimator
