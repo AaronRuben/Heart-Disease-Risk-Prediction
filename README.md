@@ -97,6 +97,14 @@ When the analysis is done without a PCA the AUC remains at *0.71*, the accuracy 
 ### Conclusions:
 -EP
 
+```diff
+- text in red
++ text in green
+! text in orange
+# text in gray
+@@ text in purple (and bold)@@
+```
+
 ### References:
 
 [1] WHO fact sheet Cardiovascular diseases (CVDs), https://www.who.int/en/news-room/fact-sheets/detail/cardiovascular-diseases-(cvds)   
@@ -142,4 +150,7 @@ When the analysis is done without a PCA the AUC remains at *0.71*, the accuracy 
     - pca_recovered_variance.png Cumulative plot variance recovered with kept components
     - if --method RF
 	    - RF_best_features.tab 10 best features of RF
+
+
+
 
