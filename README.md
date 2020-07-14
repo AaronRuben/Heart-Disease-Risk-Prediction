@@ -25,8 +25,8 @@ Similar to all experimental set of data, the data used in this project has some 
 In this project, the dataset contains two labels that correspond to whether the person develops heart disease or not. So, we basically had two different ways to go. The first way was to imput the missing values by using the clustering method of the unsupervised data. In this method, the dataset is divided into different clusters according to the features that do not have any missing value. Then, the missing values of each data point are found by averaging the values of the corresponding feature of that cluster. In this method, the best number of clusters is determined by using the Elbow method which is shown in below. The other method was to find the missing values based on the labels. To do so, the *k*-nearest-neighbors within the class were identified, and their average value for each missing feature is calculated. The optimal number for *k* has been determined using the elbow method. The plot below shows that *k=6* is a suitable choice as well as that the KNNImputer implemented in scikit-learn and our own implementation yield similar results. In this project, although the differences between the calculated values are not very vast, imputing based on the labels was used.
 
 
-![Elbow method kmeans](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/FS/k.png)   
-![Elbow method kNN](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/AP/plots/intra_class_distances.png)   
+![Elbow method kmeans](pics/k.png)   
+![Elbow method kNN](pics/intra_class_distances.png)   
 
 
 ### Dimensionality Reduction through Principle Component Analysis 
@@ -46,7 +46,7 @@ In order to classify the 10 year risk of coronary heart disease CHD, a feed forw
 
 The activation function of choice for the hidden layers was the Relu function due to other classical functions like Sigmoid and Tanh tend to saturate the information, since they are mostly sensitive to changes around their midpoints (7). For the backpropogation step, the stochastic gradient descent alogrithim was used with a learning rate of 0.0001. This learning rate was chosen by running the model with multiple rates and seeing which one provided fast convergence over the 150 epochs used to train. The dataset was split into 66% training and 33% test. In order to quantify perfomance, a binary cross entropy loss function was for training and testing. The following plots show the training loss vs epochs as well as accuracy vs epochs. 
 
-![Model loss train and test vs epochs](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/DS/nnloss.png)
+![Model loss train and test vs epochs](pics/nnloss.png)
 
 The final accuracy of the model was 0.85 on the test set, making it the second best performing classifier. 
 
