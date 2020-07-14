@@ -25,7 +25,7 @@ In this project, the dataset contains two labels that correspond to whether the 
 
 ![test](roc_curve.png)
 
-![Elbow method kmeans](FS/k.png)   
+![Elbow method kmeans](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/FS/k.png)   
 ![Elbow method kNN](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/AP/plots/intra_class_distances.png)   
 
 ### Dimensionality Reduction through Principle Component Analysis 
