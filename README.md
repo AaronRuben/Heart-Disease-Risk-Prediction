@@ -17,7 +17,7 @@ In this project, the dataset contains two labels that correspond to whether the 
 ![Elbow method kmeans](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/FS/k.PNG)   
 ![Elbow method kNN](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/AP/plots/intra_class_distances.PNG)   
 
-### Dimensionality Reductuion through Principle Component Analysis 
+### Dimensionality Reduction through Principle Component Analysis 
 
 To make the data easier to work with, principle component analysis was done to reduce the number of dimensions of the dataset. 
 
