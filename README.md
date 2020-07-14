@@ -23,7 +23,7 @@ Similar to all experimental set of data, the data used in this project has some 
 
 In this project, the dataset contains two labels that correspond to whether the person develops heart disease or not. So, we basically had two different ways to go. The first way was to imput the missing values by using the clustering method of the unsupervised data. In this method, the dataset is divided into different clusters according to the features that do not have any missing value. Then, the missing values of each data point are found by averaging the values of the corresponding feature of that cluster. In this method, the best number of clusters is determined by using the Elbow method which is shown in below. The other method was to find the missing values based on the labels. To do so, the *k*-nearest-neighbors within the class were identified, and their average value for each missing feature is calculated. The optimal number for *k* has been determined using the elbow method. The plot below shows that *k=6* is a suitable choice as well as that the KNNImputer implemented in scikit-learn and our own implementation yield similar results. In this project, although the differences between the calculated values are not very vast, imputing based on the labels was used.
 
-![Elbow method kmeans](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/FS/k.png)   
+![Elbow method kmeans](blob/FS/k.png)   
 ![Elbow method kNN](https://github.com/AaronRuben/Heart-Disease-Risk-Prediction/blob/AP/plots/intra_class_distances.png)   
 
 ### Dimensionality Reduction through Principle Component Analysis 
