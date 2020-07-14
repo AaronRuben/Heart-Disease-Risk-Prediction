@@ -36,15 +36,19 @@ To make the data easier to work with, principle component analysis was done to r
 ## Supervised Learning Section
 
 ### Logistic Regression
--FS
-
+```diff
+- FS
+```
 
 ### Support Vector Machine Classifier, 
--DS
-
+```diff
+- DS
+```
 
 ### Random Forest
--FS
+```diff
+- FS
+```
 
 
 
@@ -94,16 +98,12 @@ When the analysis is done without a PCA the AUC remains at *0.71*, the accuracy 
 
 ![Confusion matrix SVC without PCA](output/confusion_matrix_svc_without_pca.png)
 
-### Conclusions:
--EP
 
+### Conclusions:
 ```diff
-- text in red
-+ text in green
-! text in orange
-# text in gray
-@@ text in purple (and bold)@@
+- EP
 ```
+
 
 ### References:
 
