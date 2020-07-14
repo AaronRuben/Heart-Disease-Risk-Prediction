@@ -34,6 +34,21 @@ In this project, the dataset contains two labels that correspond to whether the 
 To make the data easier to work with, principle component analysis was done to reduce the number of dimensions of the dataset. After feature engineering, the dataset was very large, as combinations of variables were made. The PCA Scikit-Learn API was used, with the optimize functionality turned on within that function to choose what combination of features will be best. 
 
 ## Supervised Learning Section
+
+### Logistic Regression
+-FS
+
+
+### Support Vector Machine Classifier, 
+-DS
+
+
+### Random Forest
+-FS
+
+
+
+
 ### Neural Network
 
 Neural networks are a computuational analog to the biological neural networks found in human brains, designed to form probability-related associations between inputs to solve problems of regression or classification. The network is initialized as a set of random associations or "weights" between layered neurons and the resulting output is computed during the forward propogation step. During the backward propogration step, the weights are optimized to minimize the loss function using optimization techniques like stochastic gradient descent or the ADAM optimizer. The model's hyperparameters, like the number of hidden neurons, which activation function was used and regularization strength, can be optimized on a validation set. 
@@ -50,6 +65,10 @@ The activation function of choice for the hidden layers was the Relu function du
 
 The final accuracy of the model was 0.85 on the test set, making it the second best performing classifier. 
 
+
+
+
+## Results
 
 ### Finding the best estimator
 We evaluate the performance of logistic regression (LR), support vector machine (SVC), random forest (RF) and a neural network (NN) with respect to prediction of risk of developing a heart disease within ten years. 
@@ -74,6 +93,9 @@ When doing the grid-search with respect to the AUC, the SVC turns out to outperf
 When the analysis is done without a PCA the AUC remains at *0.71*, the accuracy drops to *0.75* but the number true positive (TP) predictions increases as well as the number in false positive (FP) predictions.
 
 ![Confusion matrix SVC without PCA](output/confusion_matrix_svc_without_pca.png)
+
+### Conclusions:
+-EP
 
 ### References:
 
