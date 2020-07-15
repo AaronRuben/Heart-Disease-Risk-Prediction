@@ -51,7 +51,7 @@ Since the feature space has been blown up by the feature engineering step mentio
 
 ### Logistic Regression
 ```diff
-- FSs
+- FSsss
 ```
 
 ### Support Vector Machine Classifier
