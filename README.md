@@ -211,9 +211,9 @@ In conclusion, this project proves that it is possible to use machine learning t
 [8] S. Hochreiter, Y. Bengio, P. Frasconi, and J. Schmidhuber. Gradient flow in recurrent nets: the difficulty of learning long-term dependencies. In S. C. Kremer and J. F. Kolen, editors, A Field Guide to Dynamical Recurrent Neural Networks. IEEE Press, 2001.   
 [9] Araújo, Lucas. “Solving XOR with a Single Perceptron.” Medium, Medium, 26 Mar. 2018, medium.com/@lucaspereira0612/solving-xor-with-a-single-perceptron-34539f395182.   
 [10] Brownlee, Jason. “A Gentle Introduction to the Rectified Linear Unit (ReLU).” Machine Learning Mastery, 6 Aug. 2019, machinelearningmastery.com/rectified-linear-activation-function-for-deep-learning-neural-networks/.   
-[11] https://www.saedsayad.com/images/SVM_2.png.
-[12] https://towardsdatascience.com/from-a-single-decision-tree-to-a-random-forest-b9523be65147.
-[13] www.heart.org/en/news/2018/10/10/framingham-the-study-and-the-town-that-changed-the-health-of-a-generation.
+[11] https://www.saedsayad.com/images/SVM_2.png.    
+[12] https://towardsdatascience.com/from-a-single-decision-tree-to-a-random-forest-b9523be65147.   
+[13] www.heart.org/en/news/2018/10/10/framingham-the-study-and-the-town-that-changed-the-health-of-a-generation.    
 
 
 ### Dependencies
