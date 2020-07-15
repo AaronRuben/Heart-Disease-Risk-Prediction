@@ -37,6 +37,10 @@ In this project, the dataset contains two labels that correspond to whether the 
 
 To make the data easier to work with, principle component analysis was done to reduce the number of dimensions of the dataset. After feature engineering, the dataset was very large, as combinations of variables were made. The PCA Scikit-Learn API was used, with the optimize functionality turned on within that function to choose what combination of features will be best. 
 
+
+![Elbow method kmeans](output/pca_transformed.png)   
+![Elbow method kNN](output/pca_recovered_variance.png)  
+
 ## Supervised Learning Section
 
 ### Logistic Regression
