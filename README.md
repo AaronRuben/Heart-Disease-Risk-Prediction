@@ -22,6 +22,7 @@ The data used in this study comes from a subset of the Framingham Heart Study pa
 
 
 ![Correlation Matrix.png](output/correlation_matrix.png)
+*Correlation matrix*
 
 
 The dataset has been split in to a training and test set in stratified fashion. 20% of the dataset have been designated for the test set. The preprocessing steps delineated below have been applied seperately, but with the same parameter setting, to the training and test set respectively. The model is trained in a 10fold stratified cross-validation on the training set and the performance is assessed on the test set. 
@@ -34,7 +35,7 @@ One of the most challenging tasks in data analysis is data cleaning, on which sc
 Similar to all experimental set of data, the data used in this project has some missing values for some features. The data used in the current project has 4240 labeled data points with 15 features, of which 6 features have some missing values. There are many ways in which data cleaning can be executed. Most commonly, one could remove the datapoints with any number of missing values. In this case we would lose a significant portion of the data, which could diminish the reliability of the model. More efficiently, one could find the average of values of a feature of the *k*-nearestest-neighbors within a class and use the average to impute the missing value. The optimal number for *k* has been determined using the elbow method. The plot below shows that *k=5* is a suitable choice as well as that the KNNImputer implemented in scikit-learn and our own implementation yield similar results. *k=5* has been identified to be the optimal choice during grid search as well.
 In this project, although the differences between the calculated values are not very vast, imputing based on the labels was used.
 
-![Elbow method kNN](pics/intra_class_distances.png)   
+![Elbow method kNN](pics/intra_class_distances.png) 
 
 ### Feature engineering
 After the data cleaning we generated polynomial and interaction features to increase the chance of unrevealing greater differences with respect to the class labels. However, the grid search described belowed, showed that this may lead to severe overfitting thus a degree of *1* used by default. 
