@@ -54,7 +54,7 @@ The support vector classifier is a classifier that aims to minimize the followin
 The classifier attempts to minimize the number of points misclassified by the classifier while also maximizing the “margin” or distance between the classes. The margin is defined by the points touching the “support” vectors on the edges of the margin. The general idea is that the support vectors should have a stronger impact on the placement of the class divider since they are closer to the margin, and that the margin should be as large as possible to ensure that the model is as generalizable as possible. 
 
 
-![Support Vector Machine Classifier Visualization](pics/SVM_2.png)
+![Support Vector Machine Classifier Visualization](pics/SVM.png)
 
 
 
