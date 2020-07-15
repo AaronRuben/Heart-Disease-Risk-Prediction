@@ -11,7 +11,7 @@ The dataset consists of continuous (i.e., Age, Cigarettes per day, etc.) and bin
 
 ### History of the Study 
 | ![framingham.png](framingham.png) |
-|:--:| 
+|:--:|
 | *Logo of the Framingham Heart Study [13]* |
 
 
