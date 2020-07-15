@@ -194,7 +194,7 @@ While feature selection is performed but not PCA the AUC and ACC increase 0.67 a
 
 
 ### Best features
-As mentioned earlier, the best features are selected based on their p-values computed during an ANOVA and all features with p-values greater than or equal to 0.05 are removed. Among the 10 most significant features are *BMI*, *cigarettes per day* (implies being a *smoker*), *hyptertension* (implies *blood pressure medication*), *diabetes* (implies disturbances of the *blood glucose level*), *heart rate*, *diastolic blood pressure* and being *male*. All of these identified best features have been reported extensively in the literature and have been initially identified based on the data of the Framingham study.  
+As mentioned earlier, the best features are selected based on their p-values computed during an ANOVA and all features with p-values greater than or equal to 0.05 are removed. Among the 10 most significant features are *BMI*, *cigarettes per day* (implies being a *smoker*), *hyptertension* (implies *blood pressure medication*), *diabetes* (implies disturbances of the *blood glucose level*), *heart rate*, *diastolic blood pressure* and being *male*. All of these identified best features have been reported extensively in the literature and have been initially identified based on the data of the Framingham study [2].  
 
 
 
