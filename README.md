@@ -2,7 +2,7 @@
 
 ### Introduction
 
-Machine learning can be used to predict the risk factors of Cardiovascular diseases (CVD). In this project, we use a dataset from the revolutionary Framingham Heart Study to develop predictive models for CVD. Both supervised and unsupervised methods were used in this project. 
+Machine learning can be used to predict the risk factors of Cardiovascular diseases (CVD). In this project, we use a dataset from the revolutionary Framingham Heart Study to develop predictive models for CVD. Both supervised and unsupervised methods were used in this project. A
 
 
 ### Background 
