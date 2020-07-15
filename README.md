@@ -45,9 +45,18 @@ To make the data easier to work with, principle component analysis was done to r
 ```
 
 ### Support Vector Machine Classifier, 
-```diff
-- DS
-```
+
+The support vector classifier is a classifier that aims to minimize the following function:
+
+
+![Support Vector Machine Classifier Optimization Problem](pics/svcAlgo.png)
+
+The classifier attempts to minimize the number of points misclassified by the classifier while also maximizing the “margin” or distance between the classes. The margin is defined by the points touching the “support” vectors on the edges of the margin. The general idea is that the support vectors should have a stronger impact on the placement of the class divider since they are closer to the margin, and that the margin should be as large as possible to ensure that the model is as generalizable as possible. 
+
+
+![Support Vector Machine Classifier Visualization](pics/SVM_2.png)
+
+
 
 ### Random Forest
 ```diff
@@ -125,6 +134,7 @@ When the analysis is done without a PCA the AUC remains at *0.71*, the accuracy 
 [5] S. Hochreiter, Y. Bengio, P. Frasconi, and J. Schmidhuber. Gradient flow in recurrent nets: the difficulty of learning long-term dependencies. In S. C. Kremer and J. F. Kolen, editors, A Field Guide to Dynamical Recurrent Neural Networks. IEEE Press, 2001.   
 [6] Araújo, Lucas. “Solving XOR with a Single Perceptron.” Medium, Medium, 26 Mar. 2018, medium.com/@lucaspereira0612/solving-xor-with-a-single-perceptron-34539f395182.   
 [7] Brownlee, Jason. “A Gentle Introduction to the Rectified Linear Unit (ReLU).” Machine Learning Mastery, 6 Aug. 2019, machinelearningmastery.com/rectified-linear-activation-function-for-deep-learning-neural-networks/.   
+[8] https://www.saedsayad.com/images/SVM_2.png
 
 ### Dependencies
 
