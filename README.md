@@ -1,6 +1,6 @@
 ## Welcome to the CS 7641 Project
 
-by Aaron Pfennig, Dhribak Shibak, Farbod Sedaghati, and Elianna Paljug (Group 1) 
+by Aaron Pfennig, Dmitry Shibak, Farbod Sedaghati, and Elianna Paljug (Group 1) 
 
 ### Introduction
 
