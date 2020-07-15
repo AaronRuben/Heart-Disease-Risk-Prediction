@@ -1,5 +1,7 @@
 ## Welcome to the CS 7641 Project
 
+by Aaron Pfennig, Dhribak Shibak, Farbod Sedaghati, and Elianna Paljug (Group 1) 
+
 ### Introduction
 
 Machine learning (ML) is becoming a powerful tool in developing predictive models in human life and one of the primary fields in today's research is using this tool in finding risk factor and diagnosis of different types of diseases which may need tears of research to be investigated pathophysiologically. Among different types of diseases, Cardiovascular diseases (CVD) take a considerable portion of financial and heath tolls every year. So, our group decided to use ML in determining the chance of developing CVDs in people with different characteristics. In this project, we use a dataset from the revolutionary Framingham Heart Study to develop predictive models for CVD. Both supervised and unsupervised methods were used in this project.
