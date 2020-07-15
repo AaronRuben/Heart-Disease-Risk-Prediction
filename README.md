@@ -41,7 +41,7 @@ After the data cleaning we generated polynomial and interaction features to incr
 
 ### Dimensionality Reduction through Principle Component Analysis 
 
-To make the data easier to work with, principle component analysis was done to reduce the number of dimensions of the dataset. After feature engineering, the dataset was very large, as combinations of variables were made. The PCA Scikit-Learn API was used, with the optimize functionality turned on within that function to choose what combination of features will be best.The grid search described later in the text yielded *n_components=10* to be the optimal number of components to keep. However, during the feature selection described in the next paragraph two of these PCs are removed. The recovered variance and the first three PCs are shown in the plot below
+To make the data easier to work with, principle component analysis was done to reduce the number of dimensions of the dataset. After feature engineering, the dataset was very large, as combinations of variables were made. The PCA Scikit-Learn API was used, with the optimize functionality turned on within that function to choose what combination of features will be best.The grid search described later in the text yielded *n_components=10* to be the optimal number of components to keep. However, during the feature selection described in the next paragraph two of these PCs are removed. The recovered variance and the first three PCs are shown in the plot below.
 
 ### Feature selection
 Since the feature space has been blown up by the feature engineering step mentioned above, we tried to reduce the dimensionality further by selecting only significant features. Therefore, the ANOVA F-value has been computed. The F-value is the ratio if two mean square values, the greater the F-value the more different the two groups are, meaning they have not been sampled from the same population. Based on the F-value it is possible to compute p-values based on which the final selection is made. All features with p-values greater than or equal to 0.05 are removed. The feature selection had manly a positive effect on the models performs. Generally, this procedure helps to tackle overfitting and hence leads to more general model. Additionally, it shortens the time required for training significantly.
@@ -148,10 +148,7 @@ As mentioned earlier, the best features are selected based on their p-values com
 
 
 ### Conclusions:
-```diff
-- EP
-```
-
+In conclusion, this project proves that it is possible to use machine learning to identify risk scores for a particular disease based on collection of features from subjects. The top 10 most significant features, mentioned above, are now for the most part common knowledge to those familiar at all with CVD. However, in the 1930s and 1940s, at the start of the Framingham Heart Study, this was not the case. Indeed, President FDR's blood pressure was measured to be 188/105 mm Hg, and he still was still deemed to be healthy by his personal physicians. It was not until the Framingham Heart Study started really diving into understanding the risk factors associated with CVD that the existence of these risk factors was brought to light. So while the usage of Machine Learning did not add additional findings beyond the traditional public health approach towards data analysis, the similarity between the machine learning based approach and the traditional approach supports the conclusion that machilne learning can be used for new diseases, not just CVD. There are many diseases that may be more complicated, and we have less datapoints or features, either in number or in quality  - and in these instances, the usage of machine learning approaches discussed in this paper could be extremely useful. As all of the members of this group are doing research in the biological or biomedical engineering fields, (is this true?????) we will undoubtedly take this knowledge with us as we apply similar approaches to our own work moving forward. 
 
 ### References:
 ```diff
