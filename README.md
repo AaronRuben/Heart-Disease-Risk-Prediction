@@ -34,14 +34,14 @@ In this project, although the differences between the calculated values are not 
 ![Elbow method kNN](pics/intra_class_distances.png)   
 
 ### Feature engineering
-After the data cleaning we generated polynomial and interaction features to increase the chance of unrevealing greater differences with respect to the class labels.
+After the data cleaning we generated polynomial and interaction features to increase the chance of unrevealing greater differences with respect to the class labels. However, the grid search described belowed, showed that this may lead to severe overfitting thus a degree of *1* used by default. 
 
 ### Dimensionality Reduction through Principle Component Analysis 
 
-To make the data easier to work with, principle component analysis was done to reduce the number of dimensions of the dataset. After feature engineering, the dataset was very large, as combinations of variables were made. The PCA Scikit-Learn API was used, with the optimize functionality turned on within that function to choose what combination of features will be best.
+To make the data easier to work with, principle component analysis was done to reduce the number of dimensions of the dataset. After feature engineering, the dataset was very large, as combinations of variables were made. The PCA Scikit-Learn API was used, with the optimize functionality turned on within that function to choose what combination of features will be best.The grid search described later in the text yielded *n_components=10* to be the optimal number of components to keep. However, during the feature selection described in the next paragraph two of these PCs are removed. The recovered variance and the first three PCs are shown in the plot below
 
 ### Feature selection
-Since the feature space has been blown up by the feature engineering step mentioned above, we tried to reduce the dimensionality further by selecting only significant features. Therefore, the ANOVA F-value has been computed. The F-value is the ratio if two mean square values, the greater the F-value the more different the two groups are, meaning they have not been sampled from the same population. Based on the F-value it is possible to compute p-values based on which the final selection is made. All features with p-values greater than or equal to 0.05 are removed. The feature selection had manly a positive effect on the models performs. It either improved it's performance (e.g. LR) or only affected it marginally (e.g. SVC). Generally, this procedure helps to tackle overfitting and hence leads to more general model. Additionally, it shortens the time required for training significantly.
+Since the feature space has been blown up by the feature engineering step mentioned above, we tried to reduce the dimensionality further by selecting only significant features. Therefore, the ANOVA F-value has been computed. The F-value is the ratio if two mean square values, the greater the F-value the more different the two groups are, meaning they have not been sampled from the same population. Based on the F-value it is possible to compute p-values based on which the final selection is made. All features with p-values greater than or equal to 0.05 are removed. The feature selection had manly a positive effect on the models performs. Generally, this procedure helps to tackle overfitting and hence leads to more general model. Additionally, it shortens the time required for training significantly.
 
 
 ![Projected PCA](output/pca_transformed.png)   
@@ -130,7 +130,7 @@ The RF achieves an AUC of 0.56 and a ACC of 0.85 and the  NN yields an AUC of 0.
 
 When the analysis is done without a PCA and without selecting the features based on p-values the AUC and ACC increase to *0.66*. However, the number true positive (TP) predictions is slight lower, 67 vs. 64 thus the improvement is achieved by a reduced number of FP, 241 vs. 225. If the PCA is performed without consecutive feature selection the model is overfitting, leading to an overall, worse performance.
 
-![Confusion matrix SVC without PCA, feature selection](output/confusion_matrix_svc_without_pca_selection.png)
+![Confusion matrix SVC without PCA, feature selection](output/confusion_matrix_without_pca_selection.png)
 
 While feature selection is performed but not PCA the AUC and ACC increase 0.67 and the TP increases to 69 (versus 67 with PCA and feature selection). At the same time the FP is lower, too, 223 versus 241.  As mentioned earlier, it is important to catch as many people at risk as possible thus we suggest to perform feature selection but not PCA since this setting yields the best sensitivity and specificity.
 
@@ -185,9 +185,10 @@ As mentioned earlier, the best features are selected based on their p-values com
     
     Optional parameters
 	    -k <int> number of k-NearestNeighbor to consider while imputing values, default=5
-	    --degree <int> max degree for creating polynomial features, default=3
-	    --n_components <int> number of components to keep during PCA, default=450
-	    --method [RF, LR, SVC, NN] supervised learning method to employ, default='LR'
+	    --degree <int> max degree for creating polynomial features, default=1
+	    --pca Perform PCA, default=False
+	    --n_components <int> number of components to keep during PCA, default=10
+	    --method [RF, LR, SVC, NN] supervised learning method to employ, default='SVC'
 	    --categorical column names of categorical features, separated by a space, default=['education', 'male', 'currentSmoker', 'prevalentStroke', 'prevalentHyp', 'diabetes']
 	    --threads <int> number of threads to use where parallelization is possible, default=8
 	    --optimize run Grid search to find best parameters. Modify parameter space at top of script in perform_gridsearch()
@@ -198,9 +199,10 @@ As mentioned earlier, the best features are selected based on their p-values com
     - roc_curve.png Plot of ROC curve of evaluation during cross validation on training set
     - confusion_matrix.png Confusion matrix of prediction on test set
     - correlation_matrix.png Correlation matrix of raw feature after missing value imputation
-    - pca_transformed.png Plot of datapoints in first 3 components
-    - pca_recovered_variance.png Cumulative plot variance recovered with kept components
-    - best_features.tab 10 best features of RF
+    - if pca is performed:
+      - pca_transformed.png Plot of datapoints in first 3 components
+      - pca_recovered_variance.png Cumulative plot variance recovered with kept components
+    - best_features.tab 10 best features:
       - if method == RF, 10 best feature based on Gini impurity in RF
       - else based on pvalues computed during ANOVA
 
