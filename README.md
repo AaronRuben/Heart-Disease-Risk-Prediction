@@ -1,9 +1,8 @@
 ## Welcome to the CS 7641 Project
 
 ### Introduction
-```diff
-- TODO
-```
+
+Machine learning can be used to predict the risk factors of Cardiovascular diseases (CVD). In this project, we use a dataset from the revolutionary Framingham Heart Study to develop predictive models for CVD. Both supervised and unsupervised methods were used in this project. 
 
 
 ### Background 
@@ -12,15 +11,19 @@ The dataset consists of continuous (i.e., Age, Cigarettes per day, etc.) and bin
 
 ### History of the Study 
 ![framingham.png](framingham.png)
-*image_caption*
+*Logo of the Framingham Heart Study*
 
 
-The Framingham Heart Study began in 1948, after President Franklin D. Roosevelt died of the widely mysterious cardiovascular disease. At this time, the medical community did not understand cardiovascular disease at all, and had no idea of any risk factors associated with the seemingly spontaneous death sentence. Even the extremely high blood pressure measurements that were taken from FDR were not seen to be indicative of any problem, because there was no association between high blood pressure and cardiovascular disease at the time. Truman signed the National Heart Act, which in part financially supported the study started by Gilcin Meadors in 1947, who collected the first subject for the study in 1948. Unlike most epidemiologiccal studies at the time, this study included men and women from Frammingham, Massachusetts evenly in the initial cohort. As time went on, the offspring of the initial cohort were also recruited to participate into the study. In 1961, study investigators from the Framingham heart study were the first to popular the terms "risk factor" and "risk score" as a novel analytical method to predict diasese, creating a logistic model with various factors, such as cholesterol, blood pressure, and number of cigarettes smoked. In 1988, they created what still is the best known risk profile for cardiovascular disease, the "Framingham Risk Score", and created the criteria still used today to define "heart failure". As time went on, they continued to better understand not only cardiovascular disease and the effectiveness of various treatment strategies, but also the risk factors associated with strokes. They have recruited the third generation children of the offspring cohort, and also now have added cohorts additional  to bring ethnic diversity to the study, which previously only analyzed white and European citizens of Framingham. 
+The Framingham Heart Study began in 1948, after President Franklin D. Roosevelt died of the widely mysterious cardiovascular disease. At this time, the medical community did not understand cardiovascular disease at all, and had no idea of any risk factors associated with the seemingly spontaneous death sentence. Even the extremely high blood pressure measurements that were taken from FDR were not seen to be indicative of any problem, because there was no association between high blood pressure and cardiovascular disease at the time. Truman signed the National Heart Act, which in part financially supported the study started by Gilcin Meadors in 1947, who collected the first subject for the study in 1948. Unlike most epidemiologiccal studies at the time, this study included men and women from Frammingham, Massachusetts evenly in the initial cohort. As time went on, the offspring of the initial cohort were also recruited to participate into the study. In 1961, study investigators from the Framingham heart study were the first to popular the terms "risk factor" and "risk score" as a novel analytical method to predict diasese, creating a logistic model with various factors, such as cholesterol, blood pressure, and number of cigarettes smoked. In 1988, they created what still is the best known risk profile for cardiovascular disease, the "Framingham Risk Score", and created the criteria still used today to define "heart failure". As time went on, they continued to better understand not only cardiovascular disease and the effectiveness of various treatment strategies, but also the risk factors associated with strokes. They have recruited the third generation children of the offspring cohort, and also now have added cohorts additional  to bring ethnic diversity to the study, which previously only analyzed white and European citizens of Framingham, Massachusetts. 
 
 
 ### Data Description
-The data used in this study comes from a subset of the Framingham Heart Study participants. It has 15 features and 4000 subjects. The breakdown of features within this dataset is shown below: 
-[ insert figure ]
+The data used in this study comes from a subset of the Framingham Heart Study participants. It has 15 features and 4000 subjects. A correlation matrix for the features of this dataset can be found below. It shows the relationship between the different features, many of which are predictable, such as prevelance of high glucose and diagnoses of diabetes being highly correlated. 
+
+
+![Correlation Matrix.png](output/correlation_matrix.png)
+
+
 The dataset has been split in to a training and test set in stratified fashion. 20% of the dataset have been designated for the test set. The preprocessing steps delineated below have been applied seperately, but with the same parameter setting, to the training and test set respectively. The model is trained in a 10fold stratified cross-validation on the training set and the performance is assessed on the test set. 
 
 
@@ -38,7 +41,7 @@ After the data cleaning we generated polynomial and interaction features to incr
 
 ### Dimensionality Reduction through Principle Component Analysis 
 
-To make the data easier to work with, principle component analysis was done to reduce the number of dimensions of the dataset. After feature engineering, the dataset was very large, as combinations of variables were made. The PCA Scikit-Learn API was used, with the optimize functionality turned on within that function to choose what combination of features will be best.The grid search described later in the text yielded *n_components=10* to be the optimal number of components to keep. However, during the feature selection described in the next paragraph two of these PCs are removed. The recovered variance and the first three PCs are shown in the plot below
+To make the data easier to work with, principle component analysis was done to reduce the number of dimensions of the dataset. After feature engineering, the dataset was very large, as combinations of variables were made. The PCA Scikit-Learn API was used, with the optimize functionality turned on within that function to choose what combination of features will be best.The grid search described later in the text yielded *n_components=10* to be the optimal number of components to keep. However, during the feature selection described in the next paragraph two of these PCs are removed. The recovered variance and the first three PCs are shown in the plot below.
 
 ### Feature selection
 Since the feature space has been blown up by the feature engineering step mentioned above, we tried to reduce the dimensionality further by selecting only significant features. Therefore, the ANOVA F-value has been computed. The F-value is the ratio if two mean square values, the greater the F-value the more different the two groups are, meaning they have not been sampled from the same population. Based on the F-value it is possible to compute p-values based on which the final selection is made. All features with p-values greater than or equal to 0.05 are removed. The feature selection had manly a positive effect on the models performs. Generally, this procedure helps to tackle overfitting and hence leads to more general model. Additionally, it shortens the time required for training significantly.
@@ -49,10 +52,13 @@ Since the feature space has been blown up by the feature engineering step mentio
 
 ## Supervised Learning Section
 
-### Logistic Regression
-```diff
-- FSs
-```
+### Introduction
+In working with any set of realistic data, we need to come up with a predictive model that can determine the outcome of new unseen data. This method is called classification, which can be executed by using the various mathematical technique. Among these techniques, Logistic Regression, Support Vector Machine, Random Forest, and Neural Network.
+
+### Logistic Regression (LR)
+To better understand LR, it is helpful to have a good vision of linear regression. In linear regression, we look for a hyperplane which fits the data effectively. The main problem of using a linear regression model is that we are limited to continuous values and if a feature is binary will can not find a good fit for that. Here is the point where LR comes into play. The big difference between linear regression and logistic regression is the type of function. In linear one, the data follows a linear hyperplane in the general case, while in logistic regression, this function is S-shape coming from the exponential root and is called Sigmoid function. This function enables us to have a continuous mapping of the data and give any number between 0 and 1. As it turns out, we can translate our findings from the previous section into a function called Probability density function. To find the best fitting parameters of Sigmoid function, we can use maximum likelihood techniques to optimize the model according to the provided data.
+![Logistic Regression](pics/logistic_reg.png)   
+
 
 ### Support Vector Machine Classifier
 
@@ -67,12 +73,10 @@ The classifier attempts to minimize the number of points misclassified by the cl
 ![Support Vector Machine Classifier Visualization](pics/SVM.png)
 
 
+### Random Forest (RF)
+The idea of RF has emanated from the decision tree technique. A decision tree is a simple and easy way to interpret data. But in practice, it is not excellent. The problem is that they work great with the data used to create them, but they are not flexible when it comes to classifying new samples. Here is where RF comes into the picture and combines the simplicity of decision trees with flexibility resulting in a vast improvement in accuracy. To implement FR, first, we need to create a bootstrap dataset. This means that we randomly select samples from the original dataset. The important thing is that we are allowed to select a datapoint multiple times. The next step is to create a decision tree using the bootstrapped dataset, but only use a random subset of features at each step. This step can be done many times, which will result in many decision trees, which is called RF. Then we need to determine how accurate our RF model is. To do that, we can isolate a subset of data and run them to the RF model, and according to the overall outcomes of the model, we can find the accuracy of the model. From now on, for any new datapoint, we can run it into the model and see what the label comes out. To have a better RF model with higher accuracy, we need to tweak the number of subset features in making the decision trees. Here is a schematic picture of an RF model. 
 
-### Random Forest
-```diff
-- FS
-```
-
+![Random Forest](pics/RF.png)  
 
 ### Neural Network
 
@@ -144,10 +148,7 @@ As mentioned earlier, the best features are selected based on their p-values com
 
 
 ### Conclusions:
-```diff
-- EP
-```
-
+In conclusion, this project proves that it is possible to use machine learning to identify risk scores for a particular disease based on collection of features from subjects. The top 10 most significant features, mentioned above, are now for the most part common knowledge to those familiar at all with CVD. However, in the 1930s and 1940s, at the start of the Framingham Heart Study, this was not the case. Indeed, President FDR's blood pressure was measured to be 188/105 mm Hg, and he still was still deemed to be healthy by his personal physicians. It was not until the Framingham Heart Study started really diving into understanding the risk factors associated with CVD that the existence of these risk factors was brought to light. So while the usage of Machine Learning did not add additional findings beyond the traditional public health approach towards data analysis, the similarity between the machine learning based approach and the traditional approach supports the conclusion that machilne learning can be used for new diseases, not just CVD. There are many diseases that may be more complicated, and we have less datapoints or features, either in number or in quality  - and in these instances, the usage of machine learning approaches discussed in this paper could be extremely useful. As all of the members of this group are doing research in the biological or biomedical engineering fields, (is this true?????) we will undoubtedly take this knowledge with us as we apply similar approaches to our own work moving forward. 
 
 ### References:
 ```diff
