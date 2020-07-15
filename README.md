@@ -20,8 +20,7 @@ The Framingham Heart Study began in 1948, after President Franklin D. Roosevelt 
 
 ### Data Description
 The data used in this study comes from a subset of the Framingham Heart Study participants. It has 15 features and 4000 subjects. A correlation matrix for the features of this dataset can be found below. It shows the relationship between the different features, many of which are predictable, such as prevelance of high glucose and diagnoses of diabetes being highly correlated. 
-
-![correlation_matrix.png](pics/correlation_matrix.png)
+![Correlation Matrix.png](output/correlation_matrix.png)
 
 The dataset has been split in to a training and test set in stratified fashion. 20% of the dataset have been designated for the test set. The preprocessing steps delineated below have been applied seperately, but with the same parameter setting, to the training and test set respectively. The model is trained in a 10fold stratified cross-validation on the training set and the performance is assessed on the test set. 
 
