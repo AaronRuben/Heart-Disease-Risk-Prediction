@@ -12,6 +12,9 @@ The dataset consists of continuous (i.e., Age, Cigarettes per day, etc.) and bin
 
 ### History of the Study 
 ![framingham.png](framingham.png)
+*image_caption*
+
+
 The Framingham Heart Study began in 1948, after President Franklin D. Roosevelt died of the widely mysterious cardiovascular disease. At this time, the medical community did not understand cardiovascular disease at all, and had no idea of any risk factors associated with the seemingly spontaneous death sentence. Even the extremely high blood pressure measurements that were taken from FDR were not seen to be indicative of any problem, because there was no association between high blood pressure and cardiovascular disease at the time. Truman signed the National Heart Act, which in part financially supported the study started by Gilcin Meadors in 1947, who collected the first subject for the study in 1948. Unlike most epidemiologiccal studies at the time, this study included men and women from Frammingham, Massachusetts evenly in the initial cohort. As time went on, the offspring of the initial cohort were also recruited to participate into the study. In 1961, study investigators from the Framingham heart study were the first to popular the terms "risk factor" and "risk score" as a novel analytical method to predict diasese, creating a logistic model with various factors, such as cholesterol, blood pressure, and number of cigarettes smoked. In 1988, they created what still is the best known risk profile for cardiovascular disease, the "Framingham Risk Score", and created the criteria still used today to define "heart failure". As time went on, they continued to better understand not only cardiovascular disease and the effectiveness of various treatment strategies, but also the risk factors associated with strokes. They have recruited the third generation children of the offspring cohort, and also now have added cohorts additional  to bring ethnic diversity to the study, which previously only analyzed white and European citizens of Framingham. 
 
 
@@ -44,17 +47,30 @@ To make the data easier to work with, principle component analysis was done to r
 ### Feature selection
 Since the feature space has been blown up by the feature engineering step mentioned above, we tried to reduce the dimensionality further by selecting only significant features. Therefore, the ANOVA F-value has been computed. The F-value is the ratio if two mean square values, the greater the F-value the more different the two groups are, meaning they have not been sampled from the same population. Based on the F-value it is possible to compute p-values based on which the final selection is made. All features with p-values greater than or equal to 0.05 are removed. The feature selection had manly a positive effect on the models performs. It either improved it's performance (e.g. LR) or only affected it marginally (e.g. SVC). Generally, this procedure helps to tackle overfitting and hence leads to more general model. Additionally, it shortens the time required for training significantly.
 
+
+![Elbow method kmeans](output/pca_transformed.png)   
+![Elbow method kNN](output/pca_recovered_variance.png)  
+
 ## Supervised Learning Section
 
 ### Logistic Regression
 ```diff
-- FS
+- FSs
 ```
 
-### Support Vector Machine Classifier, 
-```diff
-- DS
-```
+### Support Vector Machine Classifier
+
+The support vector classifier is a classifier that aims to minimize the following function:
+
+
+![Support Vector Machine Classifier Optimization Problem](pics/svcAlgo.png)
+
+The classifier attempts to minimize the number of points misclassified by the classifier while also maximizing the “margin” or distance between the classes. The margin is defined by the points touching the “support” vectors on the edges of the margin. The general idea is that the support vectors should have a stronger impact on the placement of the class divider since they are closer to the margin, and that the margin should be as large as possible to ensure that the model is as generalizable as possible. 
+
+
+![Support Vector Machine Classifier Visualization](pics/SVM.png)
+
+
 
 ### Random Forest
 ```diff
@@ -144,6 +160,7 @@ When the analysis is done without a PCA the AUC remains at *0.71*, the accuracy 
 [5] S. Hochreiter, Y. Bengio, P. Frasconi, and J. Schmidhuber. Gradient flow in recurrent nets: the difficulty of learning long-term dependencies. In S. C. Kremer and J. F. Kolen, editors, A Field Guide to Dynamical Recurrent Neural Networks. IEEE Press, 2001.   
 [6] Araújo, Lucas. “Solving XOR with a Single Perceptron.” Medium, Medium, 26 Mar. 2018, medium.com/@lucaspereira0612/solving-xor-with-a-single-perceptron-34539f395182.   
 [7] Brownlee, Jason. “A Gentle Introduction to the Rectified Linear Unit (ReLU).” Machine Learning Mastery, 6 Aug. 2019, machinelearningmastery.com/rectified-linear-activation-function-for-deep-learning-neural-networks/.   
+[8] https://www.saedsayad.com/images/SVM_2.png
 
 ### Dependencies
 
