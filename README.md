@@ -44,7 +44,7 @@ To make the data easier to work with, principle component analysis was done to r
 - FSs
 ```
 
-### Support Vector Machine Classifier, 
+### Support Vector Machine Classifier
 
 The support vector classifier is a classifier that aims to minimize the following function:
 
