@@ -26,18 +26,19 @@ logging.getLogger('tensorflow').disabled = True
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import SGD
+from tensorflow import set_random_seed
 from mpl_toolkits.mplot3d import Axes3D
 
 def perform_gridsearch(X, y, categorical, threads, output_dir):
     kneighbors = [5]
-    degrees = [3]
-    n_components = [450]#np.arange(1, 7, 1)
+    degrees = [1, 2, 3, 4]
+    n_components = [10, 50, 100, 200, 300, 400]#np.arange(1, 7, 1)
     n_splits = 10
     methods = ['RF', 'LR', 'SVC', 'NN']
     #categorical = 'education male currentSmoker prevalentStroke prevalentHyp diabetes'.split(' ')
     best_auc = 0.0
     # Split data in train and test set   
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
     nr_combinations = len(kneighbors) * len(degrees) * len(n_components) * len(methods)
     with tqdm(total=nr_combinations) as pbar:
         for method in methods:
@@ -47,6 +48,8 @@ def perform_gridsearch(X, y, categorical, threads, output_dir):
                         # prepare training data
                         preprocessing_train = Preprocessing(X_train, y_train, k, d, categorical, method)
                         preprocessed_data_train = preprocessing_train()
+                        if n >= preprocessed_data_train.shape[1]:
+                            continue
                         dim_reduction_train = DimensionalityReduction(preprocessed_data_train, n)
                         reduced_data_train, components_train, variance_ratio = dim_reduction_train()
                         # get pvalues for transformed features
@@ -62,7 +65,8 @@ def perform_gridsearch(X, y, categorical, threads, output_dir):
                         reduced_data_test, _, _ = dim_reduction_test()
                         reduced_data_test = reduced_data_test.loc[:, selected_features]
                         classification = Classification(reduced_data_train, y_train, method, n_splits, threads, output_dir, train=False)
-                        _, statistics = classification()
+                        model, _ = classification()
+                        accuracy, statistics = classification.evaluate_model(reduced_data_test, y_test, model)
                         # keep track of best model
                         if statistics[-1] > best_auc:
                             best_auc = statistics[-1]
@@ -245,9 +249,11 @@ class Classification:
         Define keras model
         return: keras model
         """
+        np.random.seed(42)
+        set_random_seed(42)
         model = Sequential()
-        model.add(Dense(25, input_dim=self.X.shape[1], activation='relu'))
-        model.add(Dense(15, activation='relu'))
+        model.add(Dense(16, input_dim=self.X.shape[1], activation='relu'))
+        model.add(Dense(8, activation='relu'))
         model.add(Dense(1, activation='sigmoid'))
         return model
     
@@ -257,10 +263,12 @@ class Classification:
         Train simple NN
         return: compiled keras model
         """
+        np.random.seed(42)
+        set_random_seed(42)
         # initialize model
         model = self.define_nn_model()
         # compile model
-        opt = SGD(lr=0.0001)
+        opt = SGD(lr=0.001)
         model.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
         return model
 
@@ -294,7 +302,7 @@ class Classification:
         mean_tpr[-1] = 1.0
         mean_auc = auc(mean_fpr, mean_tpr)
         if verbose:
-            print(f'Mean AUC: {mean_auc}')
+            print(f'Mean AUC training: {mean_auc}')
         return (mean_fpr, mean_tpr, mean_auc)
 
     def train_model(self, model):
@@ -309,7 +317,7 @@ class Classification:
         else:
             # taken from Dimitry Shribak
             model.fit(self.X.values, self.y.values, validation_split=0.2, epochs=100,
-                      batch_size=64, verbose=2)
+                      batch_size=128, verbose=2)
         return model
 
     def predict(self, X, model):
@@ -333,9 +341,24 @@ class Classification:
         Visualization(self.output_dir).plot_confusion_matrix_skl(model, X, y)
         if verbose:
             print(f'ACC: {acc}')
-        return acc
+        if self.method != 'NN':
+            probas_ = model.predict_proba(X)[:, 1]
+        else:
+            probas_ = model.predict(X).ravel()
+        # Compute ROC curve
+        mean_tpr = 0.0
+        mean_fpr = np.linspace(0, 1, 100)
+        fpr, tpr, thresholds = roc_curve(y, probas_)
+        mean_tpr += interp(mean_fpr, fpr, tpr)
+        mean_tpr[0] = 0.0
+        roc_auc = auc(fpr, tpr)
+        mean_tpr[-1] = 1.0
+        mean_auc = auc(mean_fpr, mean_tpr)
+        if verbose:
+            print(f'Mean AUC test: {mean_auc}')
+        return acc, (mean_fpr, mean_tpr, mean_auc)
 
-    def get_best_features(self, components, variance_ratio, feature_labels, model=None, pvalues=None):
+    def get_best_features(self, feature_labels, components=None, variance_ratio=None, model=None, pvalues=None, pca=False):
         """
         Get the best features. If a random forest has been trained uses the feature importances of the random Forest.
         Else based on pvalues
@@ -345,23 +368,28 @@ class Classification:
         feature_labels, n_features, actual feature labels
         return: list, best features
         """
-        # normalize components n_componets x n_features --> n_feature x n_components
-        components = np.absolute(components).T / np.absolute(components).sum(axis=1)        
-        # multiply the contribution of each feature to each component by weight of the components
-        #  n_feature x n_components --> n_componets x n_feature
-        contribution = (components * variance_ratio).T
+        if pca:
+            # normalize components n_componets x n_features --> n_feature x n_components
+            components = np.absolute(components).T / np.absolute(components).sum(axis=1)        
+            # multiply the contribution of each feature to each component by weight of the components
+            #  n_feature x n_components --> n_componets x n_feature
+            contribution = (components * variance_ratio).T
         # pick most important components
         if not model is None:
             best_component_inds = np.argsort(model.feature_importances_)[-10:]
         elif not pvalues is None:
             pvalues = pvalues[np.where(pvalues < 0.05)[0]]
             best_component_inds = np.argsort(pvalues)[-10:]
-        best_components = contribution[best_component_inds, :]
-        # sum over all components
-        feature_contribution = best_components.sum(axis=0)
-        # pick features with greates contribution = best features
-        best_feature_inds = np.argsort(feature_contribution)[-10:][::-1]
-        best_features = feature_labels[best_feature_inds]
+        if pca:
+            best_components = contribution[best_component_inds, :]
+            # sum over all components
+            feature_contribution = best_components.sum(axis=0)
+            # pick features with greates contribution = best features
+            import pdb; pdb.set_trace()
+            best_feature_inds = np.argsort(feature_contribution)[-10:][::-1]
+            best_features = feature_labels[best_feature_inds]
+        else:
+            best_features = feature_labels[best_component_inds]
         # save
         with open(f'{self.output_dir}best_features.tab', 'w+') as out:
             out.write('The top 10 features are:\n')
@@ -417,6 +445,7 @@ class Visualization:
         fig.colorbar(cax)
         figname = self.plot_dir + 'correlation_matrix.png'
         fig.savefig(figname, bbox_inches='tight')
+        plt.close('all')
 
     def plot_confusion_matrix_skl(self, model, X, y):
         """
@@ -434,7 +463,8 @@ class Visualization:
             cm_plot = ConfusionMatrixDisplay(cm, display_labels=['No risk', 'Risk'])
             cm_plot = cm_plot.plot(include_values=True, cmap='viridis', ax=ax, xticks_rotation=75,)
             fig.savefig(f'{self.plot_dir}confusion_matrix.png', bbox_inches='tight')
-            
+        plt.close('all')
+        
     def plot_recovered_variance(self, variance_ratio):
         """
         Plot the accumulated recovered variance 
@@ -448,6 +478,7 @@ class Visualization:
         ax.set_ylabel('Recovered variance')
         figname = self.plot_dir + 'pca_recovered_variance.png'
         fig.savefig(figname, bbox_inches='tight')
+        plt.close('all')
         
     def plot_components(self, X_new, y, variance_ratio, selected_features):
         """
@@ -472,8 +503,9 @@ class Visualization:
         ax.legend(bbox_to_anchor=(0.5, -0.13), loc='upper center', ncol=2)
         figname = self.plot_dir + 'pca_transformed.png'
         fig.savefig(figname, bbox_inches='tight')
+        plt.close('all')
         
-    def plot_roc_curve(self, fpr, tpr, auc):
+    def plot_roc_curve(self, fpr_test, tpr_test, auc_test, fpr_train, tpr_train, auc_train):
         """
         Plot ROC curve based on CV results
         fpr: float, mean false positive rate
@@ -483,7 +515,8 @@ class Visualization:
         """
         fig, ax = plt.subplots()
         # plot fpr vs tpr
-        ax.plot(fpr, tpr, label='ROC AUC: {:.2f}'.format(auc))
+        ax.plot(fpr_test, tpr_test, label='ROC AUC test: {:.2f}'.format(auc_test))
+        ax.plot(fpr_train, tpr_train, label='ROC AUC train: {:.2f}'.format(auc_train))
         ax.plot([0, 1], [0, 1], linestyle='--', color='red')
         # adjust plot settings
         ax.set_xlim([-0.05, 1.05])
@@ -494,6 +527,7 @@ class Visualization:
         ax.legend(loc='lower right')
         figname = self.plot_dir + 'roc_curve.png'
         fig.savefig(figname, bbox_inches='tight')
+        plt.close('all')
         
         
 def main(argv):
@@ -504,13 +538,14 @@ def main(argv):
     parser.add_argument('-k', type=int, help='k-Nearest-Neighbor are used to impute missing values, default=5', 
                         default=5, required=False)
     parser.add_argument('--degree', type=int, help='Generate polynomial features with degree less or equal to specified degree,'\
-                        'default=3', default=3, required=False)
-    parser.add_argument('--n_components', type=int, help='Number of Components used for PCA, default=450', default=450, required=False)
+                        'default=1', default=1, required=False)
+    parser.add_argument('--n_components', type=int, help='Number of Components used for PCA, default=10', default=10, required=False)
+    parser.add_argument('--pca', help='Perform PCA, default=False', required=False, default=False, action='store_true')
     parser.add_argument('--categorical', nargs='+', help='List of categorical features, separated by a space. They will be one-hot-encoded',
                         required=False, default=['education', 'male', 'currentSmoker', 'prevalentStroke', 'prevalentHyp', 'diabetes'])
     parser.add_argument('--n_splits', type=int, help='Number of splits performed during CV, default=10', default=10, required=False)
-    parser.add_argument('--method', help='Which supervised learning method to use. One of: SVC, LR (LogisticRegression), RF and NN, default=LR',
-                        default='LR', required=False)
+    parser.add_argument('--method', help='Which supervised learning method to use. One of: SVC, LR (LogisticRegression), RF and NN, default=SVC',
+                        default='SVC', required=False)
     parser.add_argument('--threads', help='Number of threads to use when possible, default=8', default=8, type=int, required=False)
     parser.add_argument('--verbose', help='Verbosity', default=False, action='store_true', required=False)
     parser.add_argument('--optimize', help='Perform GridSearch and print optimal settings', default=False, action='store_true', required=False)
@@ -529,50 +564,70 @@ def main(argv):
         args.k = best_params[1]
         args.degree = best_params[2]
         args.n_components = best_params[3]
-
+    
     verbose = args.verbose
     # Split data in train and test set   
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-   
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
     # prepare training data
     preprocessing_train = Preprocessing(X_train, y_train, args.k, args.degree, args.categorical, args.method, args.output_dir)
     preprocessed_data_train = preprocessing_train()
-    dim_reduction_train = DimensionalityReduction(preprocessed_data_train, args.n_components)
-    reduced_data_train, components_train, variance_ratio = dim_reduction_train()
-    pvalues_feature = preprocessing_train.select_features(reduced_data_train.values, y_train)
+    if args.pca:
+        original_columns = preprocessed_data_train.columns
+    if args.pca:
+        dim_reduction_train = DimensionalityReduction(preprocessed_data_train, args.n_components)
+        preprocessed_data_train, components_train, variance_ratio = dim_reduction_train()
+
     # get pvalues for transformed features
-    selected_features = reduced_data_train.columns[np.where(pvalues_feature < 0.05)[0]]
+    pvalues_feature = preprocessing_train.select_features(preprocessed_data_train.values, y_train)
+
+    selected_features = preprocessed_data_train.columns[np.where(pvalues_feature < 0.05)[0]]
+    if not args.pca:
+        original_columns = preprocessed_data_train.columns
+    else:
+        pass
     # select best features
-    reduced_data_train = reduced_data_train.loc[:, selected_features]
-    variance_ratio = variance_ratio[np.where(pvalues_feature < 0.05)[0]]
-    components_train = components_train[np.where(pvalues_feature < 0.05)[0]]
-    visualize.plot_components(reduced_data_train, y_train, variance_ratio, selected_features)
-    visualize.plot_recovered_variance(variance_ratio)    
+    preprocessed_data_train = preprocessed_data_train.loc[:, selected_features]
+    if args.pca:
+        variance_ratio = variance_ratio[np.where(pvalues_feature < 0.05)[0]]
+        components_train = components_train[np.where(pvalues_feature < 0.05)[0]]
+    
+        visualize.plot_components(preprocessed_data_train, y_train, variance_ratio, selected_features)
+        visualize.plot_recovered_variance(variance_ratio)    
 
     #prepare test data
     preprocessing_test = Preprocessing(X_test, y_test, args.k, args.degree, args.categorical, args.method)
     preprocessed_data_test = preprocessing_test()
-    dim_reduction_test= DimensionalityReduction(preprocessed_data_test, args.n_components)
-    reduced_data_test, _, _ = dim_reduction_test()
+    if args.pca:
+        dim_reduction_test= DimensionalityReduction(preprocessed_data_test, args.n_components)
+        preprocessed_data_test, _, _ = dim_reduction_test()
     # select best features
-    reduced_data_test = reduced_data_test.loc[:, selected_features]
+    preprocessed_data_test = preprocessed_data_test.loc[:, selected_features]
 
-    classification = Classification(reduced_data_train, y_train, args.method, args.n_splits, args.threads, args.output_dir)
-    #classification = Classification(preprocessed_data_train, y_train, args.method, args.n_splits, args.threads, args.output_dir)
-    model, statistics = classification()
+
+    classification = Classification(preprocessed_data_train, y_train, args.method, args.n_splits, args.threads, args.output_dir)
+    model, statistics_train = classification()
+    
     # if RF get best features --> need model, the fraction with which each feature contributed to component, original feature names
-    if args.method == 'RF':
-        best_features = classification.get_best_features(components_train, variance_ratio,
-                                                         preprocessed_data_train.columns, model=model)
-    else:
-        best_features = classification.get_best_features(components_train, variance_ratio,
-                                                         preprocessed_data_train.columns, pvalues=pvalues_feature)
-    accuracy = classification.evaluate_model(reduced_data_test, y_test, model)
-    #accuracy = classification.evaluate_model(preprocessed_data_test, y_test, model)
+    if args.method == 'RF' and args.pca:
+        best_features = classification.get_best_features(feature_labels=original_columns, components=components_train,
+                                                         variance_ratio=variance_ratio,
+                                                         model=model, pca=args.pca)
+    elif args.method != 'RF' and args.pca:
+       best_features = classification.get_best_features(feature_labels=original_columns, components=components_train,
+                                                        variance_ratio=variance_ratio,
+                                                        pvalues=pvalues_feature, pca=args.pca)
+    elif args.method == 'RF' and not args.pca:
+        best_features = classification.get_best_features(feature_labels=original_columns,
+                                                         model=model)
+    elif args.method != 'RF' and not args.pca:
+       best_features = classification.get_best_features(feature_labels=original_columns,
+                                                        pvalues=pvalues_feature)
+    
+    accuracy, statistics_test = classification.evaluate_model(preprocessed_data_test, y_test, model)
     if not os.path.isdir(args.output_dir):
         os.makedirs(args.output_dir)
     # plot roc
-    visualize.plot_roc_curve(*statistics)
+    visualize.plot_roc_curve(*statistics_test, *statistics_train)
     # save model
     if args.method == 'NN':
         model.save(f'{args.output_dir}trained_model.h5')
