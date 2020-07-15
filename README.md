@@ -4,7 +4,7 @@ by Aaron Pfennig, Dmitry Shibak, Farbod Sedaghati, and Elianna Paljug (Group 1)
 
 ### Introduction
 
-Machine learning (ML) is becoming a powerful tool in developing predictive models in human life and one of the primary fields in today's research is using this tool in finding risk factor and diagnosis of different types of diseases which may need tears of research to be investigated pathophysiologically. Among different types of diseases, Cardiovascular diseases (CVD) take a considerable portion of financial and heath tolls every year. So, our group decided to use ML in determining the chance of developing CVDs in people with different characteristics. In this project, we use a dataset from the revolutionary Framingham Heart Study to develop predictive models for CVD. Both supervised and unsupervised methods were used in this project.
+Machine learning (ML) is becoming a powerful tool in developing predictive models in human life and one of the primary fields in today's research is using this tool in finding risk factor and diagnosis of different types of diseases which may need years of research to be investigated pathophysiologically. Among different types of diseases, Cardiovascular diseases (CVD) take a considerable portion of financial and heath tolls every year. So, our group decided to use ML in determining the chance of developing CVDs in people with different characteristics. In this project, we use a dataset from the revolutionary Framingham Heart Study to develop predictive models for CVD. Both supervised and unsupervised methods were used in this project.
 
 
 ### Background 
@@ -65,7 +65,7 @@ Since the feature space has been blown up by the feature engineering step mentio
 ## Supervised Learning Section
 
 ### Introduction
-In working with any set of realistic data, we need to come up with a predictive model that can determine the outcome of new unseen data. This method is called classification, which can be executed by using the various mathematical technique. Among these techniques, Logistic Regression, Support Vector Machine, Random Forest, and Neural Network.
+In working with any set of realistic data, we need to come up with a predictive model that can determine the outcome of new unseen data. This method is called classification, which can be executed by using the various mathematical technique. Among these techniques, Logistic Regression, Support Vector Machine, Random Forest, and Neural Network, are the most prominent ones.
 
 ### Logistic Regression
 To better understand LR, it is helpful to have a good vision of linear regression. In linear regression, we look for a hyperplane which fits the data effectively. The main problem of using a linear regression model is that we are limited to continuous values and if a feature is binary will can not find a good fit for that. Here is the point where LR comes into play. The big difference between linear regression and logistic regression is the type of function. In linear one, the data follows a linear hyperplane in the general case, while in logistic regression, this function is S-shape coming from the exponential root and is called Sigmoid function. This function enables us to have a continuous mapping of the data and give any number between 0 and 1. As it turns out, we can translate our findings from the previous section into a function called Probability density function. To find the best fitting parameters of Sigmoid function, we can use maximum likelihood techniques to optimize the model according to the provided data.
