@@ -11,7 +11,7 @@ The dataset consists of continuous (i.e., Age, Cigarettes per day, etc.) and bin
 
 ### History of the Study 
 ![framingham.png](framingham.png)
-*Logo of the Framingham Heart Study*
+*Logo of the Framingham Heart Study [13]*
 
 
 The Framingham Heart Study began in 1948, after President Franklin D. Roosevelt died of the widely mysterious cardiovascular disease. At this time, the medical community did not understand cardiovascular disease at all, and had no idea of any risk factors associated with the seemingly spontaneous death sentence. Even the extremely high blood pressure measurements that were taken from FDR were not seen to be indicative of any problem, because there was no association between high blood pressure and cardiovascular disease at the time. Truman signed the National Heart Act, which in part financially supported the study started by Gilcin Meadors in 1947, who collected the first subject for the study in 1948. Unlike most epidemiologiccal studies at the time, this study included men and women from Frammingham, Massachusetts evenly in the initial cohort. As time went on, the offspring of the initial cohort were also recruited to participate into the study. In 1961, study investigators from the Framingham heart study were the first to popular the terms "risk factor" and "risk score" as a novel analytical method to predict diasese, creating a logistic model with various factors, such as cholesterol, blood pressure, and number of cigarettes smoked. In 1988, they created what still is the best known risk profile for cardiovascular disease, the "Framingham Risk Score", and created the criteria still used today to define "heart failure". As time went on, they continued to better understand not only cardiovascular disease and the effectiveness of various treatment strategies, but also the risk factors associated with strokes. They have recruited the third generation children of the offspring cohort, and also now have added cohorts additional  to bring ethnic diversity to the study, which previously only analyzed white and European citizens of Framingham, Massachusetts. 
@@ -182,7 +182,10 @@ In conclusion, this project proves that it is possible to use machine learning t
 [9] Araújo, Lucas. “Solving XOR with a Single Perceptron.” Medium, Medium, 26 Mar. 2018, medium.com/@lucaspereira0612/solving-xor-with-a-single-perceptron-34539f395182.   
 [10] Brownlee, Jason. “A Gentle Introduction to the Rectified Linear Unit (ReLU).” Machine Learning Mastery, 6 Aug. 2019, machinelearningmastery.com/rectified-linear-activation-function-for-deep-learning-neural-networks/.   
 [11] [https://www.saedsayad.com/images/SVM_2.png](https://www.saedsayad.com/images/SVM_2.png)
+
 [12] [https://towardsdatascience.com/from-a-single-decision-tree-to-a-random-forest-b9523be65147](https://towardsdatascience.com/from-a-single-decision-tree-to-a-random-forest-b9523be65147)
+[13] [www.heart.org/en/news/2018/10/10/framingham-the-study-and-the-town-that-changed-the-health-of-a-generation](www.heart.org/en/news/2018/10/10/framingham-the-study-and-the-town-that-changed-the-health-of-a-generation)
+
 
 ### Dependencies
 
