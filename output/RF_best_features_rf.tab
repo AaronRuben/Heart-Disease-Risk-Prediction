@@ -1,0 +1,11 @@
+The top 10 features are:
+0.	prevalentStroke^3
+1.	glucose^3
+2.	prevalentStroke^2
+3.	diabetes glucose^2
+4.	prevalentStroke^2 prevalentHyp
+5.	BPMeds prevalentStroke^2
+6.	age prevalentStroke^2
+7.	prevalentStroke^2 sysBP
+8.	diabetes^2 glucose
+9.	prevalentStroke^2 diaBP

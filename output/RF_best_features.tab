@@ -1,0 +1,11 @@
+The top 10 features are:
+0.	cigsPerDay^2 prevalentHyp
+1.	totChol^2 BMI
+2.	BMI heartRate^2
+3.	currentSmoker education_4^2
+4.	age BPMeds^2
+5.	BPMeds sysBP^2
+6.	prevalentHyp glucose^2
+7.	BPMeds^2 diaBP
+8.	age prevalentStroke^2
+9.	currentSmoker BMI^2
