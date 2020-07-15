@@ -22,6 +22,7 @@ The data used in this study comes from a subset of the Framingham Heart Study pa
 
 
 ![Correlation Matrix.png](output/correlation_matrix.png)
+*Correlation Matrix*
 
 
 The dataset has been split in to a training and test set in stratified fashion. 20% of the dataset have been designated for the test set. The preprocessing steps delineated below have been applied seperately, but with the same parameter setting, to the training and test set respectively. The model is trained in a 10fold stratified cross-validation on the training set and the performance is assessed on the test set. 
@@ -35,6 +36,7 @@ Similar to all experimental set of data, the data used in this project has some 
 In this project, although the differences between the calculated values are not very vast, imputing based on the labels was used.
 
 ![Elbow method kNN](pics/intra_class_distances.png)   
+*Elbow method kNN-Imputer*
 
 ### Feature engineering
 After the data cleaning we generated polynomial and interaction features to increase the chance of unrevealing greater differences with respect to the class labels. However, the grid search described belowed, showed that this may lead to severe overfitting thus a degree of *1* used by default. 
@@ -47,8 +49,10 @@ To make the data easier to work with, principle component analysis was done to r
 Since the feature space has been blown up by the feature engineering step mentioned above, we tried to reduce the dimensionality further by selecting only significant features. Therefore, the ANOVA F-value has been computed. The F-value is the ratio if two mean square values, the greater the F-value the more different the two groups are, meaning they have not been sampled from the same population. Based on the F-value it is possible to compute p-values based on which the final selection is made. All features with p-values greater than or equal to 0.05 are removed. The feature selection had manly a positive effect on the models performs. Generally, this procedure helps to tackle overfitting and hence leads to more general model. Additionally, it shortens the time required for training significantly.
 
 
-![Projected PCA](output/pca_transformed.png)   
+![Projected PCA](output/pca_transformed.png)
+*Projected PCA*
 ![Recovered Variance](output/pca_recovered_variance.png)  
+*Recovered variance*
 
 ## Supervised Learning Section
 
@@ -57,8 +61,9 @@ In working with any set of realistic data, we need to come up with a predictive 
 
 ### Logistic Regression (LR)
 To better understand LR, it is helpful to have a good vision of linear regression. In linear regression, we look for a hyperplane which fits the data effectively. The main problem of using a linear regression model is that we are limited to continuous values and if a feature is binary will can not find a good fit for that. Here is the point where LR comes into play. The big difference between linear regression and logistic regression is the type of function. In linear one, the data follows a linear hyperplane in the general case, while in logistic regression, this function is S-shape coming from the exponential root and is called Sigmoid function. This function enables us to have a continuous mapping of the data and give any number between 0 and 1. As it turns out, we can translate our findings from the previous section into a function called Probability density function. To find the best fitting parameters of Sigmoid function, we can use maximum likelihood techniques to optimize the model according to the provided data.
-![Logistic Regression](pics/logistic_reg.png)   
 
+![Logistic Regression](pics/logistic_reg.png)   
+*Logistic Regression*
 
 ### Support Vector Machine Classifier
 
@@ -66,36 +71,36 @@ The support vector classifier is a classifier that aims to minimize the followin
 
 
 ![Support Vector Machine Classifier Optimization Problem](pics/svcAlgo.png)
+*Support Vector Machine optimization problem*
 
 The classifier attempts to minimize the number of points misclassified by the classifier while also maximizing the “margin” or distance between the classes. The margin is defined by the points touching the “support” vectors on the edges of the margin. The general idea is that the support vectors should have a stronger impact on the placement of the class divider since they are closer to the margin, and that the margin should be as large as possible to ensure that the model is as generalizable as possible. 
 
 
 ![Support Vector Machine Classifier Visualization](pics/SVM.png)
-
+*Support Vector Machine visualization*
 
 ### Random Forest (RF)
 The idea of RF has emanated from the decision tree technique. A decision tree is a simple and easy way to interpret data. But in practice, it is not excellent. The problem is that they work great with the data used to create them, but they are not flexible when it comes to classifying new samples. Here is where RF comes into the picture and combines the simplicity of decision trees with flexibility resulting in a vast improvement in accuracy. To implement FR, first, we need to create a bootstrap dataset. This means that we randomly select samples from the original dataset. The important thing is that we are allowed to select a datapoint multiple times. The next step is to create a decision tree using the bootstrapped dataset, but only use a random subset of features at each step. This step can be done many times, which will result in many decision trees, which is called RF. Then we need to determine how accurate our RF model is. To do that, we can isolate a subset of data and run them to the RF model, and according to the overall outcomes of the model, we can find the accuracy of the model. From now on, for any new datapoint, we can run it into the model and see what the label comes out. To have a better RF model with higher accuracy, we need to tweak the number of subset features in making the decision trees. Here is a schematic picture of an RF model. 
 
 ![Random Forest](pics/RF.png)  
+*Random Forest*
 
 ### Neural Network
 
 Neural networks are a computuational analog to the biological neural networks found in human brains, designed to form probability-related associations between inputs to solve problems of regression or classification. The network is initialized as a set of random associations or "weights" between layered neurons and the resulting output is computed during the forward propogation step. During the backward propogration step, the weights are optimized to minimize the loss function using optimization techniques like stochastic gradient descent or the ADAM optimizer. The model's hyperparameters, like the number of hidden neurons, which activation function was used and regularization strength, can be optimized on a validation set. 
 
 ![Neural Network Algorithim](pics/nn.png)   
+*Neural Network*
 
 In order to classify the 10 year risk of coronary heart disease CHD, a feed forward, two hidden layer network was created, as shown above. The size of the input layer is the number of features, in our case being 15 features we have 15 input neurons. Next, we choose the number of hidden layers to be two. Selecting two hidden layers for the network is best because if we choose more layers, we are more likely to run into overfitting issues due to the model being too complex to learn the underlying sturcture, similar to using a polynomial of degree 6 to learn a quadratic function. In addition, the vanishing gradient problem can occur in networks too deep due to multiplication of the paritial derivatives for each layer [5]. Selecting less than two hidden layers could result in the model not being able to learn non-linearly seprable data, as in the classic example of a single perceptron network not being able to learn the XOR function because there is no linear path between (0,0) and (1,1), as shown below [6]:
 
 ![XOR problem in single layer perceptron (6)](pics/xor.png)
+*XOR problem in single layer perceptrion(6)*
 
 The activation function of choice for the hidden layers was the Relu function due to other classical functions like Sigmoid and Tanh tend to saturate the information, since they are mostly sensitive to changes around their midpoints [7]. For the backpropogation step, the stochastic gradient descent alogrithim was used with a learning rate of 0.0001. This learning rate was chosen by running the model with multiple rates and seeing which one provided fast convergence over the 150 epochs used to train. The dataset was split into 66% training and 33% test. In order to quantify perfomance, a binary cross entropy loss function was for training and testing. The following plots show the training loss vs epochs as well as accuracy vs epochs. 
 
 ![Model loss train and test vs epochs](pics/nnloss.png)
-
-The final accuracy of the model was 0.85 on the test set, making it the second best performing classifier. 
-
-
-
+*Model loss train and test vs epochs*
 
 ## Results
 
@@ -112,34 +117,49 @@ The performance of the classifier has been assessed in a stratified, 10fold cros
 When assessing the performs with respect to the accuracy a random forest classifier outperforms the other classifier with an accuracy of *0.85* but the AUC is *0.47* and thereby, as good as flipping an unbiased coin. *k* has been found to be 2, *d* to be 3 and *n* to be 4. However, as shown below the scenario of high accuracy and low AUC described above occurs with these settings. The model just always predicts *No risk* which is a good guess just by chance but it misses nearly all patients who are at risk. Indeed, the model is predicted all samples with label *No risk*, for which reason it did not learn anythin. In a medical setting this is particularly bad when it is desired to catch as many people at risk as possible. Thus, AUC is the more appropriate metric to assess the classifiers performance.
 
 ![Confusion matrix random forest best ACC](output/confusion_matrix_rf_acc.png "Confusion matrix RF best ACC")
+*Confusion matrix RF optimized with respect to ACC*
+
 ![ROC curve RF best ACC](output/roc_curve_rf_acc.png "ROC curve RF best ACC")
+*ROC curve RF optimized with respect to ACC*
 
 When conducting the grid-search with respect to the AUC, SVC turns out to outperform all other classifiers. With *k=5*, *d=1* and *n=10* it achieves an AUC of *0.62* and accuracy of *0.64*. But as can be seen below the number of correctly predicted patients is higher albeit not greater either. However, the increased sensitivity comes with an decrease in terms specificity (compare number of FP predictions). The ROC curve suggests that the model started to overfit slightly indicated by the ROC curve on test being below the one for the training set. This explains why polynomial feature did not bolster the performance since they would add to the overfitting.
 
 ![Confusion matrix SVC](output/confusion_matrix_svc.png)
+*Confusion matrix SVC*
 ![ROC curve SVC](output/roc_curve_svc.png)
+*ROC curve SVC*
 
 The performance of LR, RF and NN with the same parameters are shown below. Logistic Regression achieves an AUC of 61 and a ACC of 0.67.
 
 ![Confusion matrix LR](output/confusion_matrix_lr.png "Confusion matrix LR")
+*Confusion matrix LR*
+
 ![ROC curve LR](output/roc_curve_lr.png "ROC curve LR")
+*ROC curve LR*
 
 The RF achieves an AUC of 0.56 and a ACC of 0.85 and the  NN yields an AUC of 0.58 and a ACC of 0.84. Both predict virtually all sample to be *No risk* indicating they did not learn anything meaningfull but just guess a label based on the skewed dataset.
 
-![Confusion matrix random forest best ACC](output/confusion_matrix_rf_acc.png "Confusion matrix RF best ACC")
-![ROC curve RF best ACC](output/roc_curve_rf_acc.png "ROC curve RF best ACC")
+![Confusion matrix random forest](output/confusion_matrix_rf.png "Confusion matrix RF")
+*Confusion matrix RF* 
+![ROC curve RF](output/roc_curve_rf.png "ROC curve RF")
+*ROC curve RF*
 
 ![Confusion matrix NN](output/confusion_matrix_NN.png "Confusion matrix NN")
-![ROC curve NN](output/roc_curve_NN.png "ROC curve NN")
+*Confusion matrix NN*
 
+![ROC curve NN](output/roc_curve_NN.png "ROC curve NN")
+*ROC curve NN*
 When the analysis is done without a PCA and without selecting the features based on p-values the AUC and ACC increase to *0.66*. However, the number true positive (TP) predictions is slight lower, 67 vs. 64 thus the improvement is achieved by a reduced number of FP, 241 vs. 225. If the PCA is performed without consecutive feature selection the model is overfitting, leading to an overall, worse performance.
 
 ![Confusion matrix SVC without PCA, feature selection](output/confusion_matrix_without_pca_selection.png)
+*Confusion matrix SVC without PCA and feature selection*
 
 While feature selection is performed but not PCA the AUC and ACC increase 0.67 and the TP increases to 69 (versus 67 with PCA and feature selection). At the same time the FP is lower, too, 223 versus 241.  As mentioned earlier, it is important to catch as many people at risk as possible thus we suggest to perform feature selection but not PCA since this setting yields the best sensitivity and specificity.
 
 ![Confusion matrix SVC without PCA](output/confusion_matrix_without_pca.png)
+*Confusion matrix SVC without PCA but with feature selection*
 ![ROC curve SVC without PCA](output/roc_curve_without_pca.png)
+*ROC curve SVC without PCA but with feature selection*
 
 
 ### Best features
