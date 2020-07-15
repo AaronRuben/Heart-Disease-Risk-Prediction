@@ -2,7 +2,7 @@
 
 ### Introduction
 
-Machine learning can be used to predict the risk factors of Cardiovascular diseases (CVD). In this project, we use a dataset from the revolutionary Framingham Heart Study to develop predictive models for CVD. Both supervised and unsupervised methods were used in this project. 
+Machine learning (ML) is becoming a powerful tool in developing predictive models in human life and one of the primary fields in today's research is using this tool in finding risk factor and diagnosis of different types of diseases which may need tears of research to be investigated pathophysiologically. Among different types of diseases, Cardiovascular diseases (CVD) take a considerable portion of financial and heath tolls every year. So, our group decided to use ML in determining the chance of developing CVDs in people with different characteristics. In this project, we use a dataset from the revolutionary Framingham Heart Study to develop predictive models for CVD. Both supervised and unsupervised methods were used in this project.
 
 
 ### Background 
@@ -59,11 +59,11 @@ Since the feature space has been blown up by the feature engineering step mentio
 ### Introduction
 In working with any set of realistic data, we need to come up with a predictive model that can determine the outcome of new unseen data. This method is called classification, which can be executed by using the various mathematical technique. Among these techniques, Logistic Regression, Support Vector Machine, Random Forest, and Neural Network.
 
-### Logistic Regression (LR)
 To better understand LR, it is helpful to have a good vision of linear regression. In linear regression, we look for a hyperplane which fits the data effectively. The main problem of using a linear regression model is that we are limited to continuous values and if a feature is binary will can not find a good fit for that. Here is the point where LR comes into play. The big difference between linear regression and logistic regression is the type of function. In linear one, the data follows a linear hyperplane in the general case, while in logistic regression, this function is S-shape coming from the exponential root and is called Sigmoid function. This function enables us to have a continuous mapping of the data and give any number between 0 and 1. As it turns out, we can translate our findings from the previous section into a function called Probability density function. To find the best fitting parameters of Sigmoid function, we can use maximum likelihood techniques to optimize the model according to the provided data.
 
-![Logistic Regression](pics/logistic_reg.png)   
-*Logistic Regression*
+
+![Logistic Regression (5)](pics/logistic_reg.png)   
+*Logistic Regression [5]*
 
 ### Support Vector Machine Classifier
 
@@ -77,13 +77,13 @@ The classifier attempts to minimize the number of points misclassified by the cl
 
 
 ![Support Vector Machine Classifier Visualization](pics/SVM.png)
-*Support Vector Machine visualization*
+*Support Vector Machine visualization [11]*
 
 ### Random Forest (RF)
 The idea of RF has emanated from the decision tree technique. A decision tree is a simple and easy way to interpret data. But in practice, it is not excellent. The problem is that they work great with the data used to create them, but they are not flexible when it comes to classifying new samples. Here is where RF comes into the picture and combines the simplicity of decision trees with flexibility resulting in a vast improvement in accuracy. To implement FR, first, we need to create a bootstrap dataset. This means that we randomly select samples from the original dataset. The important thing is that we are allowed to select a datapoint multiple times. The next step is to create a decision tree using the bootstrapped dataset, but only use a random subset of features at each step. This step can be done many times, which will result in many decision trees, which is called RF. Then we need to determine how accurate our RF model is. To do that, we can isolate a subset of data and run them to the RF model, and according to the overall outcomes of the model, we can find the accuracy of the model. From now on, for any new datapoint, we can run it into the model and see what the label comes out. To have a better RF model with higher accuracy, we need to tweak the number of subset features in making the decision trees. Here is a schematic picture of an RF model. 
 
-![Random Forest](pics/RF.png)  
-*Random Forest*
+![Random Forest(12)](pics/RF.png)  
+*Random Forest [12]*
 
 ### Neural Network
 
@@ -171,22 +171,18 @@ As mentioned earlier, the best features are selected based on their p-values com
 In conclusion, this project proves that it is possible to use machine learning to identify risk scores for a particular disease based on collection of features from subjects. The top 10 most significant features, mentioned above, are now for the most part common knowledge to those familiar at all with CVD. However, in the 1930s and 1940s, at the start of the Framingham Heart Study, this was not the case. Indeed, President FDR's blood pressure was measured to be 188/105 mm Hg, and he still was still deemed to be healthy by his personal physicians. It was not until the Framingham Heart Study started really diving into understanding the risk factors associated with CVD that the existence of these risk factors was brought to light. So while the usage of Machine Learning did not add additional findings beyond the traditional public health approach towards data analysis, the similarity between the machine learning based approach and the traditional approach supports the conclusion that machilne learning can be used for new diseases, not just CVD. There are many diseases that may be more complicated, and we have less datapoints or features, either in number or in quality  - and in these instances, the usage of machine learning approaches discussed in this paper could be extremely useful. As all of the members of this group are doing research in the biological or biomedical engineering fields, (is this true?????) we will undoubtedly take this knowledge with us as we apply similar approaches to our own work moving forward. 
 
 ### References:
-```diff
-- REDO
-```
-
 [1] WHO fact sheet Cardiovascular diseases (CVDs), https://www.who.int/en/news-room/fact-sheets/detail/cardiovascular-diseases-(cvds)   
 [2] Mahmood, S. S., Levy, D., Vasan, R. S., & Wang, T. J. (2014). The Framingham Heart Study and the epidemiology of cardiovascular disease: A historical perspective. In The Lancet (Vol. 383, Issue 9921, pp. 999–1008). Lancet Publishing Group. https://doi.org/10.1016/S0140-6736(13)61752-3.   
 [3] Weng SF, Reps J, Kai J, Garibaldi JM, Qureshi N (2017) Can machine-learning improve cardiovascular risk prediction using routine clinical data?. PLOS ONE 12(4): e0174944. https://doi.org/10.1371/journal.pone.0174944.   
 [4] Faris, H., Aljarah, I. & Mirjalili, S. Training feedforward neural networks using multi-verse optimizer for binary classification problems. Appl Intell 45, 322–332 (2016). https://doi.org/10.1007/s10489-016-0767-1.   
-[5] Rahman, Md Mahmudur, Bipin C. Desai, and Prabir Bhattacharya. "Medical image retrieval with probabilistic multi-class support vector machine classifiers and adaptive similarity fusion." Computerized Medical Imaging and Graphics 32.2 (2008): 95-108.
-
-[6]Polat, Kemal, and Salih Güneş. "Breast cancer diagnosis using least square support vector machine." Digital signal processing 17.4 (2007): 694-701.
-
-[5] S. Hochreiter, Y. Bengio, P. Frasconi, and J. Schmidhuber. Gradient flow in recurrent nets: the difficulty of learning long-term dependencies. In S. C. Kremer and J. F. Kolen, editors, A Field Guide to Dynamical Recurrent Neural Networks. IEEE Press, 2001.   
-[6] Araújo, Lucas. “Solving XOR with a Single Perceptron.” Medium, Medium, 26 Mar. 2018, medium.com/@lucaspereira0612/solving-xor-with-a-single-perceptron-34539f395182.   
-[7] Brownlee, Jason. “A Gentle Introduction to the Rectified Linear Unit (ReLU).” Machine Learning Mastery, 6 Aug. 2019, machinelearningmastery.com/rectified-linear-activation-function-for-deep-learning-neural-networks/.   
-[8] https://www.saedsayad.com/images/SVM_2.png
+[5] Logistic Regression in R: A Classification Technique to Predict Credit Card Default. https://whatsthebigdata.com/2019/11/11/logistic-regression-in-r-a-classification-technique-to-predict-credit-card-default/     
+[6] Rahman, Md Mahmudur, Bipin C. Desai, and Prabir Bhattacharya. "Medical image retrieval with probabilistic multi-class support vector machine classifiers and adaptive similarity fusion." Computerized Medical Imaging and Graphics 32.2 (2008): 95-108.
+[7]Polat, Kemal, and Salih Güneş. "Breast cancer diagnosis using least square support vector machine." Digital signal processing 17.4 (2007): 694-701.
+[8] S. Hochreiter, Y. Bengio, P. Frasconi, and J. Schmidhuber. Gradient flow in recurrent nets: the difficulty of learning long-term dependencies. In S. C. Kremer and J. F. Kolen, editors, A Field Guide to Dynamical Recurrent Neural Networks. IEEE Press, 2001.   
+[9] Araújo, Lucas. “Solving XOR with a Single Perceptron.” Medium, Medium, 26 Mar. 2018, medium.com/@lucaspereira0612/solving-xor-with-a-single-perceptron-34539f395182.   
+[10] Brownlee, Jason. “A Gentle Introduction to the Rectified Linear Unit (ReLU).” Machine Learning Mastery, 6 Aug. 2019, machinelearningmastery.com/rectified-linear-activation-function-for-deep-learning-neural-networks/.   
+[11] [https://www.saedsayad.com/images/SVM_2.png](https://www.saedsayad.com/images/SVM_2.png)
+[12] [https://towardsdatascience.com/from-a-single-decision-tree-to-a-random-forest-b9523be65147](https://towardsdatascience.com/from-a-single-decision-tree-to-a-random-forest-b9523be65147)
 
 ### Dependencies
 
