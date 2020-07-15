@@ -41,7 +41,7 @@ To make the data easier to work with, principle component analysis was done to r
 
 ### Logistic Regression
 ```diff
-- FS
+- FSs
 ```
 
 ### Support Vector Machine Classifier, 
