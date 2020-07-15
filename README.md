@@ -28,13 +28,9 @@ The dataset has been split in to a training and test set in stratified fashion. 
 ### Data Cleaning
 One of the most challenging tasks in data analysis is data cleaning, on which scientists spend an enormous amount of time enhancing the reliability and quality of the data. In working with any real dataset, usually, there are some data points in which some features are missing. This is usually due to not maintaining the data correctly or because this data has not been recorded initially. These missing values incur errors and unreliability in the analysis and eventually leads to not having a robust predictive model. To overcome this problem, we need to find and imput values for the missing ones by using the standard probabilistic models or even refine the data to remove the errors. This helps us to obtain a reliable dataset that improves the quality of the training data for analysis and provides accurate decision-making.
 
-Similar to all experimental set of data, the data used in this project has some missing values for some features. The data used in the current project has 4240 labeled data points with 15 features, of which 6 features have some missing values. There are many ways in which data cleaning can be executed. Most commonly, one could remove the datapoints with any number of missing values. In this case we could lose a significant portion of the data, which could diminish the reliability of the model. More efficiently, one could find the average of values of a feature and imput that for all missing values for the corresponding feature. Or, if the labels are given, like in this project, missing features for each data point can be calculated by finding the average of the features for that associated label. 
-
-In this project, the dataset contains two labels that correspond to whether the person develops heart disease or not. So, we basically had two different ways to go. The first way was to imput the missing values by using the clustering method of the unsupervised data. In this method, the dataset is divided into different clusters according to the features that do not have any missing value. Then, the missing values of each data point are found by averaging the values of the corresponding feature of that cluster. In this method, the best number of clusters is determined by using the Elbow method which is shown in below. The other method was to find the missing values based on the labels. To do so, the *k*-nearest-neighbors within the class were identified, and their average value for each missing feature is calculated. The optimal number for *k* has been determined using the elbow method. The plot below shows that *k=5* is a suitable choice as well as that the KNNImputer implemented in scikit-learn and our own implementation yield similar results. *k=5* has been identified to be the optimal choice during grid search as well.
+Similar to all experimental set of data, the data used in this project has some missing values for some features. The data used in the current project has 4240 labeled data points with 15 features, of which 6 features have some missing values. There are many ways in which data cleaning can be executed. Most commonly, one could remove the datapoints with any number of missing values. In this case we would lose a significant portion of the data, which could diminish the reliability of the model. More efficiently, one could find the average of values of a feature of the *k*-nearestest-neighbors within a class and use the average to impute the missing value. The optimal number for *k* has been determined using the elbow method. The plot below shows that *k=5* is a suitable choice as well as that the KNNImputer implemented in scikit-learn and our own implementation yield similar results. *k=5* has been identified to be the optimal choice during grid search as well.
 In this project, although the differences between the calculated values are not very vast, imputing based on the labels was used.
 
-
-![Elbow method kmeans](pics/k.png)   
 ![Elbow method kNN](pics/intra_class_distances.png)   
 
 ### Feature engineering
@@ -48,8 +44,8 @@ To make the data easier to work with, principle component analysis was done to r
 Since the feature space has been blown up by the feature engineering step mentioned above, we tried to reduce the dimensionality further by selecting only significant features. Therefore, the ANOVA F-value has been computed. The F-value is the ratio if two mean square values, the greater the F-value the more different the two groups are, meaning they have not been sampled from the same population. Based on the F-value it is possible to compute p-values based on which the final selection is made. All features with p-values greater than or equal to 0.05 are removed. The feature selection had manly a positive effect on the models performs. It either improved it's performance (e.g. LR) or only affected it marginally (e.g. SVC). Generally, this procedure helps to tackle overfitting and hence leads to more general model. Additionally, it shortens the time required for training significantly.
 
 
-![Elbow method kmeans](output/pca_transformed.png)   
-![Elbow method kNN](output/pca_recovered_variance.png)  
+![Projected PCA](output/pca_transformed.png)   
+![Recovered Variance](output/pca_recovered_variance.png)  
 
 ## Supervised Learning Section
 
@@ -76,9 +72,6 @@ The classifier attempts to minimize the number of points misclassified by the cl
 ```diff
 - FS
 ```
-
-### Feature selection
-
 
 
 ### Neural Network
@@ -111,20 +104,23 @@ In order to decide which of the above mentioned classifier works the best on our
 - d: the degree used for creating polynomial features
 - n : the number of components to keep during the PCA
 - method: the estimator (one of LR, SVC, RF, NN)
-The performance of the classifier has been assessed in a cross-validation for each of the parameter configurations.
-When assessing the performs with respect to the accuracy a random forest classifier outperforms the other classifier with an accuracy of *0.85* but the AUC is only *0.70*. *k* has been found to be 2, *d* to be 3 and *n* to be 4. However, as shown below the scenario of high accuracy and low AUC described above occurs with these settings. The model just always predicts *No risk* which is a good guess just by chance but it misses nearly all patients who are at risk. Indeed, the model is predicted all samples with label *No risk*, for which reason it did not learn anythin. In a medical setting this is particularly bad when it is desired to catch as many people at risk as possible. Thus, AUC is the more appropriate metric to assess the classifiers performance.
+The performance of the classifier has been assessed in a stratified, 10fold cross-validation for each of the parameter configurations.
+When assessing the performs with respect to the accuracy a random forest classifier outperforms the other classifier with an accuracy of *0.85* but the AUC is *0.47* and thereby, as good as flipping an unbiased coin. *k* has been found to be 2, *d* to be 3 and *n* to be 4. However, as shown below the scenario of high accuracy and low AUC described above occurs with these settings. The model just always predicts *No risk* which is a good guess just by chance but it misses nearly all patients who are at risk. Indeed, the model is predicted all samples with label *No risk*, for which reason it did not learn anythin. In a medical setting this is particularly bad when it is desired to catch as many people at risk as possible. Thus, AUC is the more appropriate metric to assess the classifiers performance.
 
 ![Confusion matrix random forest best ACC](output/confusion_matrix_rf_acc.png "Confusion matrix RF best ACC")
 ![ROC curve RF best ACC](output/roc_curve_rf_acc.png "ROC curve RF best ACC")
 
-When doing the grid-search with respect to the AUC, the Logistic Regressions turns out to outperform all other classifiers. With *k=5*, *d=3* and *n=450* it achieves an AUC of *0.75* and accuracy of *0.68*. But as can be seen below the number of correctly predicted patients is higher albeit not greater either. However, the increased sensitivity comes with an decrease in terms specificity (compare number of FP predictions). 
+When conducting the grid-search with respect to the AUC, SVC turns out to outperform all other classifiers. With *k=5*, *d=1* and *n=10* it achieves an AUC of *0.62* and accuracy of *0.64*. But as can be seen below the number of correctly predicted patients is higher albeit not greater either. However, the increased sensitivity comes with an decrease in terms specificity (compare number of FP predictions). The ROC curve suggests that the model started to overfit slightly indicated by the ROC curve on test being below the one for the training set. This explains why polynomial feature did not bolster the performance since they would add to the overfitting.
 
-![Confusion matrix LR](output/confusion_matrix_lr.png)
-![ROC curve LR](output/roc_curve_lr.png)
+![Confusion matrix SVC](output/confusion_matrix_svc.png)
+![ROC curve SVC](output/roc_curve_svc.png)
 
-The performance of the SVC, RF and NN with the same parameters are shown below. The SVC achieves 
-![Confusion matrix SVC](output/confusion_matrix_svc.png "Confusion matrix SVC")
-![ROC curve SVC](output/roc_curve_svc.png "ROC curve SVC")
+The performance of LR, RF and NN with the same parameters are shown below. Logistic Regression achieves an AUC of 61 and a ACC of 0.67.
+
+![Confusion matrix LR](output/confusion_matrix_lr.png "Confusion matrix LR")
+![ROC curve LR](output/roc_curve_lr.png "ROC curve LR")
+
+The RF achieves an AUC of 0.56 and a ACC of 0.85 and the  NN yields an AUC of 0.58 and a ACC of 0.84. Both predict virtually all sample to be *No risk* indicating they did not learn anything meaningfull but just guess a label based on the skewed dataset.
 
 ![Confusion matrix random forest best ACC](output/confusion_matrix_rf_acc.png "Confusion matrix RF best ACC")
 ![ROC curve RF best ACC](output/roc_curve_rf_acc.png "ROC curve RF best ACC")
@@ -132,10 +128,17 @@ The performance of the SVC, RF and NN with the same parameters are shown below. 
 ![Confusion matrix NN](output/confusion_matrix_NN.png "Confusion matrix NN")
 ![ROC curve NN](output/roc_curve_NN.png "ROC curve NN")
 
+When the analysis is done without a PCA and without selecting the features based on p-values the AUC and ACC increase to *0.66*. However, the number true positive (TP) predictions is slight lower, 67 vs. 64 thus the improvement is achieved by a reduced number of FP, 241 vs. 225. If the PCA is performed without consecutive feature selection the model is overfitting, leading to an overall, worse performance.
 
-When the analysis is done without a PCA the AUC remains at *0.71*, the accuracy drops to *0.75* but the number true positive (TP) predictions increases as well as the number in false positive (FP) predictions.
+![Confusion matrix SVC without PCA, feature selection](output/confusion_matrix_svc_without_pca_selection.png)
+
+While feature selection is performed but not PCA the AUC and ACC increase 0.67 and the TP increases to 69 (versus 67 with PCA and feature selection). At the same time the FP is lower, too, 223 versus 241.  As mentioned earlier, it is important to catch as many people at risk as possible thus we suggest to perform feature selection but not PCA since this setting yields the best sensitivity and specificity.
 
 ![Confusion matrix SVC without PCA](output/confusion_matrix_svc_without_pca.png)
+
+### Best features
+As mentioned earlier, the best features are selected based on their p-values computed during an ANOVA and all features with p-values greater than or equal to 0.05 are removed. Among the 10 most significant features are *BMI*, *cigarettes per day* (implies being a *smoker*), *hyptertension* (implies *blood pressure medication*), *diabetes* (implies disturbances of the *blood glucose level*), *heart rate*, *diastolic blood pressure* and being *male*. All of these identified best features have been reported extensively in the literature and have been initially identified based on the data of the Framingham study.  
+
 
 
 ### Conclusions:
